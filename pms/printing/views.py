@@ -1,5 +1,6 @@
 from django.views.generic import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class IndexView(TemplateView):
+class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = "printing/index.html"

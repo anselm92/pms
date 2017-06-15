@@ -32,7 +32,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html">Printing Management System</a>
+            <a class="navbar-brand" href="{% url 'home' %}">Printing Management System</a>
         </div>
         {% include 'printing/navbar.html' %}
         <div class="collapse navbar-collapse navbar-ex1-collapse">
@@ -47,6 +47,8 @@
                     <h1 class="page-header">{% block page_title %}{% endblock %}</h1>
                 </div>
             </div>
+
+            {% block messages %}{% endblock %}
 
             {% block content %}{% endblock %}
         </div>
