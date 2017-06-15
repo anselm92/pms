@@ -1,7 +1,15 @@
-{% extends "printing/base.html" %}
+{% extends "printing/base_generic.html" %}
 
 {% block title %}Dashboard{% endblock %}
 
+{% block page_title %}Dashboard{% endblock %}
+
 {% block content %}
-    Welcome to the Printing Management System
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-info alert-dismissable">
+                Welcome to the Printing Management System
+            </div>
+        </div>
+    </div>
 {% endblock %}
