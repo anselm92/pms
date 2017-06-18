@@ -1,8 +1,13 @@
 {% load i18n %}
 
 <ul class="nav navbar-nav side-nav">
-    <li class="active">
-        <a href="{% url "printing:dashboard" %}"><i class="fa fa-fw fa-dashboard"></i> {% trans "Dashboard" %}</a>
+    {% url "printing:home" as url %}
+    <li {% if request.path == url %} class="active"{% endif %}>
+        <a href="{{ url }}"><i class="fa fa-fw fa-home"></i> {% trans "Home" %}</a>
+    </li>
+    {% url "printing:dashboard" as url %}
+    <li {% if request.path == url %} class="active"{% endif %}>
+        <a href="{{ url }}"><i class="fa fa-fw fa-dashboard"></i> {% trans "Dashboard" %}</a>
     </li>
     <li>
         <a href="#"><i class="fa fa-fw fa-bar-chart-o"></i> Dummy</a>
