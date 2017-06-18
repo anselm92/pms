@@ -1,4 +1,5 @@
 {% extends "printing/base_generic.html" %}
+{% load i18n %}
 
 {% block title %}Logout{% endblock %}
 
@@ -6,6 +7,6 @@
 
 {% block content %}
     <div class="alert alert-success">
-        You have logged out sucessfully.
+        {% trans "You have logged out sucessfully." %}
     </div>
 {% endblock %}

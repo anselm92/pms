@@ -1,35 +1,35 @@
 {% extends "printing/base_generic.html" %}
+{% load i18n %}
 
-{% block title %}Login{% endblock %}
+{% block title %}{% trans "Login" %}{% endblock %}
 
-{% block page_title %}Login{% endblock %}
+{% block page_title %}{% trans "Login" %}{% endblock %}
 
 {% block content %}
     <div class="row">
         <div class="col-lg-12">
             {% if form.errors %}
-                <div class="alert alert-danger">Your username and password didn't match. Please try again.</div>
+                <div class="alert alert-danger">{% trans "Your username and password didn't match." %}</div>
             {% elif next %}
                 {% if user.is_authenticated %}
                     <div class="alert alert-warning">
-                        Your account doesn't have access to this page. To proceed, please login with an account that has
-                        access.
+                        {% trans "Your account doesn't have access to this page." %}
                     </div>
                 {% else %}
-                    <div class="alert alert-info">Please login to see this page.</div>
+                    <div class="alert alert-info">{% trans "Please login to see this page." %}</div>
                 {% endif %}
             {% endif %}
         </div>
 
         <div class="col-lg-3">
-            <form method="post" action="{% url "login" %}" role="form">
+            <form method="post" action="{% url "printing:login" %}" role="form">
                 {% csrf_token %}
                 <div class="form-group">
-                    <label for="id_username">Username:</label>
+                    <label for="id_username">{% trans "Username" %}:</label>
                     <input type="text" name="username" class="form-control" id="id_username"/>
                 </div>
                 <div class="form-group">
-                    <label for="id_password">Password:</label>
+                    <label for="id_password">{% trans "Password" %}:</label>
                     <input type="password" name="password" class="form-control" id="id_password">
                 </div>
                 <input type="submit" value="login" class="btn btn-primary"/>

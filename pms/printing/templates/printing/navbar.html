@@ -1,6 +1,7 @@
+{% load i18n %}
 <ul class="nav navbar-right top-nav">
     <li>
-        <a href="{% url "home" %}">Home</a>
+        <a href="{% url "printing:home" %}">Home</a>
     </li>
     {% if user.is_authenticated %}
         <li class="dropdown">
@@ -9,17 +10,17 @@
             </a>
             <ul class="dropdown-menu">
                 <li>
-                    <a href="#"><i class="fa fa-fw fa-user"></i> My Account</a>
+                    <a href="#"><i class="fa fa-fw fa-user"></i> {% trans "My Account" %}</a>
                 </li>
                 <li class="divider"></li>
                 <li>
-                    <a href="{% url "logout" %}"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                    <a href="{% url "printing:logout" %}"><i class="fa fa-fw fa-power-off"></i> {% trans "Log Out" %}</a>
                 </li>
             </ul>
         </li>
     {% else %}
         <li>
-            <a href="{% url "login" %}"><i class="fa fa-user"></i> Login</a>
+            <a href="{% url "printing:login" %}"><i class="fa fa-user"></i> {% trans "Login" %}</a>
         </li>
     {% endif %}
 </ul>
