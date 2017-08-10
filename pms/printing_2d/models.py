@@ -10,12 +10,6 @@ class CoverSheetColor(models.Model):
         return self.name
 
 
-SIDED_PRINTING_SIMPLEX = 1
-SIDED_PRINTING_DUPLEX = 2
-SIDED_PRINTING = ((SIDED_PRINTING_SIMPLEX, 'Simplex'),
-                  (SIDED_PRINTING_DUPLEX, 'Duplex'),)
-
-
 class ScriptOrder(Order):
     cover_sheet_color = models.ForeignKey(CoverSheetColor)
 
@@ -27,12 +21,18 @@ class PostProcessing2d(models.Model):
         return self.name
 
 
-class Material2d(models.Model):
-    paper_weight = models.IntegerField()
+class Material2d(Material):
+    paper_weight = models.FloatField()  # Weight in grams
     paper_format = models.CharField(max_length=20)
 
     def __str__(self):
         return '%s, %d grams' % (self.paper_format, self.paper_weight)
+
+
+SIDED_PRINTING_SIMPLEX = 1
+SIDED_PRINTING_DUPLEX = 2
+SIDED_PRINTING = ((SIDED_PRINTING_SIMPLEX, 'Simplex'),
+                  (SIDED_PRINTING_DUPLEX, 'Duplex'),)
 
 
 class CustomOrder2d(Order):

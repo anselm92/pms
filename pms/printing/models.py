@@ -40,6 +40,7 @@ ORDER_STATUS = ((ORDER_STATUS_OPEN, 'Open'),
 
 class Order(models.Model):
     title = models.CharField(max_length=99)
+    amount = models.IntegerField()
     # TODO: File path?
     customer = models.ForeignKey(Customer)
     status = models.SmallIntegerField(choices=ORDER_STATUS, default=ORDER_STATUS_OPEN)
@@ -51,7 +52,7 @@ class Order(models.Model):
 class Material(models.Model):
     name = models.CharField(max_length=99)
     color_code = models.CharField(max_length=99)
-    cost_per_unit = models.FloatField()
+    cost_per_unit = models.FloatField()  # Cost in Euros
 
     def __str__(self):
         return self.name
