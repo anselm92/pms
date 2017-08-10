@@ -27,16 +27,17 @@ class PostProcessing2d(models.Model):
         return self.name
 
 
-class CustomOrder2d(Order):
-    sided_printing = models.SmallIntegerField(choices=SIDED_PRINTING, default=SIDED_PRINTING_SIMPLEX)
-    chromatic_printing = models.BooleanField(default=False)
-    cost_center = models.ForeignKey(CostCenter)
-    post_processing = models.ManyToManyField(PostProcessing2d)
-
-
 class Material2d(models.Model):
     paper_weight = models.IntegerField()
     paper_format = models.CharField(max_length=20)
 
     def __str__(self):
         return '%s, %d grams' % (self.paper_format, self.paper_weight)
+
+
+class CustomOrder2d(Order):
+    sided_printing = models.SmallIntegerField(choices=SIDED_PRINTING, default=SIDED_PRINTING_SIMPLEX)
+    chromatic_printing = models.BooleanField(default=False)
+    cost_center = models.ForeignKey(CostCenter)
+    post_processing = models.ManyToManyField(PostProcessing2d)
+    material = models.ForeignKey(Material2d)

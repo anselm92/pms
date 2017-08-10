@@ -58,6 +58,7 @@ class Material(models.Model):
 
 
 class Comment(models.Model):
+    order = models.ForeignKey(Order)
     create_date = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
 
