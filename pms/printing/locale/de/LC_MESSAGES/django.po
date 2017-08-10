@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-18 23:32+0200\n"
+"POT-Creation-Date: 2017-08-10 22:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,10 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: printing/templates/printing/base_generic.html:32
-msgid "Toggle navigation"
-msgstr "Navigationsleiste ein-/ausblenden"
 
 #: printing/templates/printing/dashboard.html:12
 msgid ""
@@ -36,7 +32,6 @@ msgstr "Willkommen im Printing Management System"
 
 #: printing/templates/printing/login.html:4
 #: printing/templates/printing/login.html:6
-#: printing/templates/printing/navbar.html:35
 msgid "Login"
 msgstr "Anmelden"
 
@@ -70,18 +65,17 @@ msgstr "Passwort"
 msgid "You have logged out sucessfully."
 msgstr "Du hast dich erfolgreich angemeldet."
 
-#: printing/templates/printing/navbar.html:24
-msgid "My Account"
-msgstr "Mein Account"
+#~ msgid "Toggle navigation"
+#~ msgstr "Navigationsleiste ein-/ausblenden"
 
-#: printing/templates/printing/navbar.html:28
-msgid "Log Out"
-msgstr "Abmelden"
+#~ msgid "My Account"
+#~ msgstr "Mein Account"
 
-#: printing/templates/printing/sidebar.html:6
-msgid "Home"
-msgstr "Start"
+#~ msgid "Log Out"
+#~ msgstr "Abmelden"
 
-#: printing/templates/printing/sidebar.html:10
-msgid "Dashboard"
-msgstr "Dashboard"
+#~ msgid "Home"
+#~ msgstr "Start"
+
+#~ msgid "Dashboard"
+#~ msgstr "Dashboard"

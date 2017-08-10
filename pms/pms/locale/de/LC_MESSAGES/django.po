@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-18 23:32+0200\n"
+"POT-Creation-Date: 2017-08-10 22:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,10 +18,34 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: pms/settings.py:112
+#: pms/settings.py:113
 msgid "English"
 msgstr "Englisch"
 
-#: pms/settings.py:113
+#: pms/settings.py:114
 msgid "German"
 msgstr "Deutsch"
+
+#: pms/templates/pms/base_generic.html:32
+msgid "Toggle navigation"
+msgstr "Navigationsleiste ein-/ausblenden"
+
+#: pms/templates/pms/navbar.html:24
+msgid "My Account"
+msgstr "Mein Account"
+
+#: pms/templates/pms/navbar.html:28
+msgid "Log Out"
+msgstr "Abmelden"
+
+#: pms/templates/pms/navbar.html:35
+msgid "Login"
+msgstr "Anmelden"
+
+#: pms/templates/pms/sidebar.html:6
+msgid "Home"
+msgstr "Start"
+
+#: pms/templates/pms/sidebar.html:10
+msgid "Dashboard"
+msgstr "Dashboard"
