@@ -7,13 +7,23 @@ class Customer(models.Model):
     last_name = models.CharField(max_length=99)
     mail_address = models.CharField(max_length=99)
 
+    def __str__(self):
+        return '%s %s' % (self.first_name, self.last_name)
+
 
 class StaffCustomer(Customer):
     user = models.ForeignKey(User)
 
 
+class ExternalCustomer(Customer):
+    pass
+
+
 class CostCenter(models.Model):
     name = models.CharField(max_length=99)
+
+    def __str__(self):
+        return self.name
 
 
 ORDER_STATUS_OPEN = 1
@@ -34,16 +44,25 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer)
     status = models.SmallIntegerField(choices=ORDER_STATUS, default=ORDER_STATUS_OPEN)
 
+    def __str__(self):
+        return self.title
+
 
 class Material(models.Model):
     name = models.CharField(max_length=99)
     color_code = models.CharField(max_length=99)
     cost_per_unit = models.FloatField()
 
+    def __str__(self):
+        return self.name
+
 
 class Comment(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
+
+    def __str__(self):
+        return self.text
 
 
 class StaffComment(Comment):

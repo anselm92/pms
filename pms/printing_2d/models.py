@@ -6,6 +6,9 @@ class CoverSheetColor(models.Model):
     name = models.CharField(max_length=99)
     color_code = models.CharField(max_length=99)
 
+    def __str__(self):
+        return self.name
+
 
 SIDED_PRINTING_SIMPLEX = 1
 SIDED_PRINTING_DUPLEX = 2
@@ -20,6 +23,9 @@ class ScriptOrder(Order):
 class PostProcessing2d(models.Model):
     name = models.CharField(max_length=99)
 
+    def __str__(self):
+        return self.name
+
 
 class CustomOrder2d(Order):
     sided_printing = models.SmallIntegerField(choices=SIDED_PRINTING, default=SIDED_PRINTING_SIMPLEX)
@@ -31,3 +37,6 @@ class CustomOrder2d(Order):
 class Material2d(models.Model):
     paper_weight = models.IntegerField()
     paper_format = models.CharField(max_length=20)
+
+    def __str__(self):
+        return '%s, %d grams' % (self.paper_format, self.paper_weight)
