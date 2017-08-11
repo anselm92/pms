@@ -1,5 +1,6 @@
+from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 
 from printing.models import *
 from printing_2d.models import *
@@ -107,3 +108,15 @@ class Command(BaseCommand):
         order_3d_2 = Order3d(title='Hippo', amount=1, customer=external_customer_1, material=material_3d_1, width=15,
                              height=15, depth=15)
         order_3d_2.save()
+
+        self.stdout.write('Permissions')
+        # TODO: add permissions for all views
+        content_type = ContentType.objects.filter(app_label="printing", model="dashboard")
+        if not content_type:
+            content_type = ContentType.objects.create(app_label="printing", model="dashboard")
+
+        if not Permission.objects.filter(content_type=content_type, codename="dashboard_show"):
+            # add it
+            Permission.objects.create(content_type=content_type,
+                                      codename="dashboard_show",
+                                      name="Can view %s" % content_type.model)
