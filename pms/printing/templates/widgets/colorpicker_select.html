@@ -1,0 +1,15 @@
+{% load staticfiles %}
+<script src="{% static 'widgets/bootstrap-colorselector.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'widgets/bootstrap-colorselector.min.css' %}">
+
+<select id="selector1" name="{{ widget.name }}">
+    {% for group_name, group_choices, group_index in widget.optgroups %}{% if group_name %}
+        <optgroup label="{{ group_name }}">{% endif %}{% for option in group_choices %}
+        {% include option.template_name with widget=option %}{% endfor %}{% if group_name %}
+        </optgroup>{% endif %}{% endfor %}
+</select>
+<script>
+    $(function () {
+        $('#selector1').colorselector();
+    });
+</script>

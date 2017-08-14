@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'printing',
     'printing_2d',
     'printing_3d',
+    'bootstrap3'
 ]
 
 MIDDLEWARE = [

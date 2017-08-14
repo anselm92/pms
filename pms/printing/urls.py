@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^accounts/login/$', auth_views.LoginView.as_view(template_name='printing/login.html'), name='login'),
     url(r'^accounts/logout/$', auth_views.LogoutView.as_view(template_name='printing/logout.html'), name='logout'),
     url(r'^dashboard/$', DashboardView.as_view(), name="dashboard"),
-    url(r'^printing_2d/', include(urls_2d_printing.urlpatterns)),
+    url(r'^printing_2d/', include(urls_2d_printing.urlpatterns, namespace="printing_2d"), ),
+
 ]

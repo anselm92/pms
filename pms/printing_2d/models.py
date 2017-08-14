@@ -7,7 +7,7 @@ class CoverSheetColor(models.Model):
     color_code = models.CharField(max_length=99)
 
     def __str__(self):
-        return self.name
+        return self.color_code
 
 
 class ScriptOrder(Order):
