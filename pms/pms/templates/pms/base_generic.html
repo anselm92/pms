@@ -1,6 +1,6 @@
 {% load static %}
 {% load i18n %}
-
+{% load bootstrap3 %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,7 +51,9 @@
                 </div>
             </div>
 
-            {% block messages %}{% endblock %}
+            {% block messages %}
+                {% bootstrap_messages %}
+            {% endblock %}
 
             {% block content %}{% endblock %}
         </div>

@@ -1,3 +1,5 @@
+import secrets
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -41,12 +43,20 @@ ORDER_STATUS = ((ORDER_STATUS_OPEN, 'Open'),
 class Order(models.Model):
     title = models.CharField(max_length=99)
     amount = models.IntegerField()
+    order_hash = models.CharField(max_length=20, null=True, blank=True)
+    create_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     # TODO: File path?
     customer = models.ForeignKey(Customer)
     status = models.SmallIntegerField(choices=ORDER_STATUS, default=ORDER_STATUS_OPEN)
 
     def __str__(self):
         return self.title
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.order_hash is None or len(self.order_hash) == 0:
+            self.order_hash = secrets.token_urlsafe(20)
+        models.Model.save(self, force_insert, force_update, using, update_fields)
 
 
 class Material(models.Model):
