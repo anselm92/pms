@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<div class="panel-body">
+    <div class="col-sm-12">
+        <div class="col-sm-9">
+            <div class="row">
+
+                <div class="col-sm-8 col-xs-8">
+                    <h5 class="nomargin">{% trans 'Cover sheet color' %}</h5>
+                </div>
+                <div class="col-sm-4 hidden-xs" style="color: #{{ order.scriptorder.cover_sheet_color.color_code }}">
+                    {{ order.scriptorder.cover_sheet_color.name }}
+                </div>
+            </div>
+
+
+        </div>
+        <div class="col-sm-3">
+            <a href="/shop/myaccount/orders/keYcSabHBc5z/c_order/" class="btn btn-fw btn-default">Cancel order</a>
+            <a href="/shop/myaccount/orders/keYcSabHBc5z/s_bill/" class="btn btn-fw btn-default">Show bill</a>
+            <a href="/shop/myaccount/orders/keYcSabHBc5z/w_review" class="btn btn-fw btn-default">Write review</a>
+        </div>
+    </div>
+
+</div>

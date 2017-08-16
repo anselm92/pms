@@ -1,0 +1,62 @@
+{% load i18n %}
+
+<div class="panel-body">
+    <div class="col-sm-12">
+        <div class="col-sm-9">
+            <div class="row">
+
+                <div class="col-sm-8 col-xs-8">
+                    <h5 class="nomargin">{% trans 'Sided printing' %}</h5>
+                </div>
+                <div class="col-sm-4 hidden-xs">
+                    {{ order.customorder2d.sided_printing }}
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-sm-8 col-xs-8">
+                    <h5 class="nomargin">{% trans 'Chromatic printing' %}</h5>
+                </div>
+                <div class="col-sm-4 hidden-xs">
+                    {{ order.customorder2d.chromatic_printing }}
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-sm-8 col-xs-8">
+                    <h5 class="nomargin">{% trans 'Cost center' %}</h5>
+                </div>
+                <div class="col-sm-4 hidden-xs">
+                    {{ order.customorder2d.cost_center }}
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-sm-8 col-xs-8">
+                    <h5 class="nomargin">{% trans 'Post processing' %}</h5>
+                </div>
+                <div class="col-sm-4 hidden-xs">
+                    {% for item in order.customorder2d.post_processing.all %}
+                        {{ item }}<br>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-sm-8 col-xs-8">
+                    <h5 class="nomargin">{% trans 'Material' %}</h5>
+                </div>
+                <div class="col-sm-4 hidden-xs">
+                    {{ order.customorder2d.material }}
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-3">
+            <a href="/shop/myaccount/orders/keYcSabHBc5z/c_order/" class="btn btn-fw btn-default">Cancel order</a>
+            <a href="/shop/myaccount/orders/keYcSabHBc5z/s_bill/" class="btn btn-fw btn-default">Show bill</a>
+            <a href="/shop/myaccount/orders/keYcSabHBc5z/w_review" class="btn btn-fw btn-default">Write review</a>
+        </div>
+    </div>
+
+</div>
