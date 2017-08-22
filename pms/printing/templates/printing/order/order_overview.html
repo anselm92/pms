@@ -1,6 +1,9 @@
 {% extends "pms/base_generic.html" %}
 {% load i18n %}
-
+{% load staticfiles %}
+{% block head %}
+    <link href="{% static "css/theme.css" %}" rel="stylesheet">
+{% endblock head %}
 {% block title %}Order - {{ order.title }}{% endblock %}
 
 {% block page_title %}Order - {{ order.title }}{% endblock %}
@@ -9,12 +12,11 @@
 
     <div class="row">
     <div class="col-lg-12">
-
         <div class="panel">
-            <div style="overflow: auto" class="panel-heading orders-overview">
+            <div style="background-color: white; overflow: auto" class="panel-heading panel-heading-bordered">
                 <div style="overflow: auto" class="col-md-12">
                     <div class="col-md-3 col-xs-3" style="text-align: left; ">
-                        {% trans 'Orderdate'%}
+                        {% trans 'Orderdate' %}
                     </div>
                     <div class="col-md-2 col-xs-2">
                         {% trans 'State' %}
@@ -28,14 +30,10 @@
                 </div>
                 <div style="overflow: auto; font-size: small" class="col-md-12">
                     <div class="col-md-3 col-xs-3" style="text-align: left">
-
-                       {{ order.create_date }}
-
+                        {{ order.create_date }}
                     </div>
                     <div class="col-md-2  col-xs-2">
-
-                        {{ order.status}}
-
+                        {{ order.status }}
                     </div>
                     <div class="col-md-3  col-xs-3">
                         {{ order.total }}
@@ -43,7 +41,6 @@
                     <div class="col-md-4  col-xs-4">
                         <div class="col-md-6">
                             <a href="#">{% trans 'Orderdetails' %}</a>
-
                         </div>
                         <div class="col-md-6">
                             <a href="#">{% trans 'Bill' %}</a>
@@ -59,6 +56,18 @@
                 {% endif %}
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>Comments</h3>
+            </div><!-- /col-sm-12 -->
+        </div><!-- /row -->
+        {% for comment in comments %}
+            {% include 'printing/general/comment.html' %}
+        {% empty %}
+            <div class="col-sm-12">{% trans 'No comments yet' %}</div>
+        {% endfor %}
+
     </div>
 {% endblock %}
-
+</div>

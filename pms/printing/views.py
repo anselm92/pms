@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, CreateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
-from printing.models import Order, StaffCustomer
+from printing.models import Order, StaffCustomer, Comment
 
 
 class HomeView(TemplateView):
@@ -38,3 +38,8 @@ class OrderOverviewView(DetailView):
     context_object_name = 'order'
     slug_url_kwarg = "order_hash"
     slug_field = "order_hash"
+
+    def get_context_data(self, **kwargs):
+        context = super(OrderOverviewView, self).get_context_data(**kwargs)
+        context['comments'] = Comment.objects.filter(order=self.get_object())[:5]
+        return context

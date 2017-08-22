@@ -1,0 +1,26 @@
+{% load i18n %}
+
+<div class="row">
+    {% if comment.externalcomment %}
+        {% include 'printing/general/comment_profile_img.html' %}
+    {% endif %}
+
+    <div class="col-sm-7 {% if comment.staffcomment %}col-sm-offset-4{% endif %}">
+        <div class="panel {% if comment.staffcomment %}panel-comment-right{% else %}
+                    panel-comment{% endif %} panel-default {% if comment.staffcomment %}panel-green{% endif %}">
+            <div class="panel-heading">
+                <strong>{% if comment.staffcomment %}{{ comment.staffcomment.user }}{% else %}
+                    {{ comment.externalcomment.customer }}{% endif %}</strong> <span
+                    class="text-muted">{% trans 'commented' %}
+                {{ comment.create_date | timesince }}{% trans ' ago' %}</span>
+            </div>
+            <div class="panel-body">
+                {{ comment.text |safe }}
+            </div><!-- /panel-body -->
+        </div><!-- /panel panel-default -->
+    </div><!-- /col-sm-5 -->
+    {% if comment.staffcomment %}
+        {% include 'printing/general/comment_profile_img.html' %}
+    {% endif %}
+
+</div><!-- /row -->
