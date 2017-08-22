@@ -1,6 +1,8 @@
 {% extends "pms/base_generic.html" %}
 {% load i18n %}
 {% load staticfiles %}
+{% load bootstrap3 %}
+
 {% block head %}
     <link href="{% static "css/theme.css" %}" rel="stylesheet">
 {% endblock head %}
@@ -67,7 +69,16 @@
         {% empty %}
             <div class="col-sm-12">{% trans 'No comments yet' %}</div>
         {% endfor %}
-
+        <form action="" class="col-sm-6" method="post">
+            {% csrf_token %}
+            {% bootstrap_form comment_form %}
+            <input type="hidden" name="">
+            {% buttons %}
+                <button class="btn btn-primary">
+                    Send
+                </button>
+            {% endbuttons %}
+        </form>
     </div>
 {% endblock %}
 </div>

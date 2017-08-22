@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 
-from printing.models import Order, Material, Comment, StaffComment
+from printing.models import Order, Material, Comment, StaffComment, ExternalComment
 
 
 class OrderBaseForm(ModelForm):
@@ -21,7 +21,13 @@ class CommentBaseForm(ModelForm):
         fields = ['text']
 
 
-class StaffCommentBaseForm(ModelForm):
-    class Meta:
+class StaffCommentBaseForm(CommentBaseForm):
+    class Meta(CommentBaseForm.Meta):
         model = StaffComment
-        fields = ['text', 'public']
+        fields = CommentBaseForm.Meta.fields + ['public']
+
+
+class ExternalCommentForm(CommentBaseForm):
+    class Meta(CommentBaseForm.Meta):
+        model = ExternalComment
+        fields = CommentBaseForm.Meta.fields

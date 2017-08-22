@@ -6,6 +6,6 @@ app_name = 'printing_2d'
 
 urlpatterns = [
     url(r'^$', HomeView.as_view(), name="home"),
-    url(r'^order/script$', ScriptOrderView.as_view(), name="script"),
-    url(r'^order/custom$', CustomOrder2dView.as_view(), name="custom"),
+    url(r'^order/script$', CreateScriptOrderView.as_view(), name="script"),
+    url(r'^order/custom$', CreateCustomOrder2DView.as_view(), name="custom"),
 ]

@@ -1,4 +1,4 @@
-from django.forms.widgets import Widget, Select
+from django.forms.widgets import Select
 
 
 class ColorSelector(Select):
@@ -7,6 +7,5 @@ class ColorSelector(Select):
 
     def get_context(self, name, value, attrs):
         context = super(Select, self).get_context(name, value, attrs)
-
         context['widget']['color'] = value
         return context
