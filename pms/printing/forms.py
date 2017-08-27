@@ -1,6 +1,7 @@
-from django.forms import ModelForm
+from captcha.fields import ReCaptchaField
+from django.forms import ModelForm, CharField, EmailField
 
-from printing.models import Order, Material, Comment, StaffComment, ExternalComment
+from printing.models import Order, Material, Comment, StaffComment, ExternalComment, Customer, ExternalCustomer
 
 
 class OrderBaseForm(ModelForm):
@@ -27,7 +28,19 @@ class StaffCommentBaseForm(CommentBaseForm):
         fields = CommentBaseForm.Meta.fields + ['public']
 
 
-class ExternalCommentForm(CommentBaseForm):
+class ExternalCustomerForm(ModelForm):
+    #captcha = ReCaptchaField()
+
+    class Meta:
+        model = ExternalCustomer
+        fields = ['first_name', 'last_name', 'mail_address']
+
+
+class ExternalCommentForm(CommentBaseForm, ExternalCustomerForm):
+    first_name = CharField(max_length=20)
+    last_name = CharField(max_length=20)
+    mail_address = EmailField()
+
     class Meta(CommentBaseForm.Meta):
         model = ExternalComment
-        fields = CommentBaseForm.Meta.fields
+        fields = ExternalCustomerForm.Meta.fields + CommentBaseForm.Meta.fields

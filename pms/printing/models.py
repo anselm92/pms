@@ -18,7 +18,7 @@ class StaffCustomer(Customer):
 
 
 class ExternalCustomer(Customer):
-    pass
+    order_token = models.CharField(max_length=30)
 
 
 class CostCenter(models.Model):
@@ -72,6 +72,7 @@ class Comment(models.Model):
     order = models.ForeignKey(Order)
     create_date = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
+    public = models.BooleanField(default=True)
 
     def __str__(self):
         return self.text
@@ -79,7 +80,6 @@ class Comment(models.Model):
 
 class StaffComment(Comment):
     user = models.ForeignKey(User)
-    public = models.BooleanField(default=False)
 
 
 class ExternalComment(Comment):

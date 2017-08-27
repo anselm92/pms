@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'printing',
     'printing_2d',
     'printing_3d',
-    'bootstrap3'
+    'bootstrap3',
+    'captcha'
 ]
 
 MIDDLEWARE = [
@@ -134,3 +135,7 @@ LOGIN_REDIRECT_URL = '/'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+ECAPTCHA_PUBLIC_KEY = '6Ld9Xi4UAAAAAFJrnP9En_5YodT2uIQfH_pY1_eL'
+RECAPTCHA_PRIVATE_KEY = '6Ld9Xi4UAAAAAPFjPuVaCrvde9kR8Zr6ER0pCQCd'
+NOCAPTCHA = True
+RECAPTCHA_TESTING = True

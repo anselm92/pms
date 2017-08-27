@@ -62,23 +62,35 @@
         <div class="row">
             <div class="col-sm-12">
                 <h3>Comments</h3>
+                <hr>
+            </div>
+            <div class="col-sm-8 col-sm-offset-2">
+                {% for comment in comments %}
+                    {% include 'printing/general/comment.html' %}
+                {% empty %}
+                    <div class="col-sm-12">{% trans 'No comments yet' %}</div>
+                {% endfor %}
+            </div>
+            <div class="col-sm-12">
+                <hr>
+
+                <div class="col-sm-offset-3 col-sm-6">
+                    <h4>Reply..</h4>
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        {% bootstrap_form form %}
+                        <input type="hidden" name="">
+                        {% buttons %}
+                            <button class="btn btn-primary">
+                                Send
+                            </button>
+                        {% endbuttons %}
+                    </form>
+                </div>
+
             </div><!-- /col-sm-12 -->
         </div><!-- /row -->
-        {% for comment in comments %}
-            {% include 'printing/general/comment.html' %}
-        {% empty %}
-            <div class="col-sm-12">{% trans 'No comments yet' %}</div>
-        {% endfor %}
-        <form action="" class="col-sm-6" method="post">
-            {% csrf_token %}
-            {% bootstrap_form comment_form %}
-            <input type="hidden" name="">
-            {% buttons %}
-                <button class="btn btn-primary">
-                    Send
-                </button>
-            {% endbuttons %}
-        </form>
+
     </div>
 {% endblock %}
 </div>
