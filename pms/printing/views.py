@@ -77,8 +77,13 @@ class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, Subs
         is_authenticated = self.request.user.is_authenticated()
         token = self.kwargs['order_token']
         order: Order = form.save(commit=False)
-        order.customer = StaffCustomer.objects.get(
-            user=self.request.user) if is_authenticated else ExternalCustomer.objects.get(order_token=token)
+        if is_authenticated:
+            order.customer, _ = StaffCustomer.objects.get_or_create(first_name=self.request.user.first_name,
+                                                                    last_name=self.request.user.last_name,
+                                                                    mail_address=self.request.user.email,
+                                                                    user=self.request.user)
+        else:
+            ExternalCustomer.objects.get(order_token=token)
         order.save()
         self.subscribe(order, order.customer)
         return super(CreateOrderView, self).form_valid(form)
