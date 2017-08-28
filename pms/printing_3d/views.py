@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from printing.views import CreateOrderView
+from .forms import Order3dForm
+from .models import Order3d
 
-# Create your views here.
+
+class CreateCustomOrder3DView(CreateOrderView):
+    template_name = "order/order_3d.html"
+    form_class = Order3dForm
+    model = Order3d

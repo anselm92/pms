@@ -4,6 +4,7 @@ from django.contrib.auth import views as auth_views
 from printing.views import DashboardView, HomeView, ShowOrderOverviewView, CreateExternalCustomerView, \
     UnsubscribeFromOrder, UnsubscribeFromOrderSuccessful
 from printing_2d import urls as urls_2d_printing
+from printing_3d import urls as urls_3d_printing
 
 urlpatterns = [
     url(r'^$', HomeView.as_view(), name="home"),
@@ -15,6 +16,6 @@ urlpatterns = [
     url(r'^order/(?P<order_hash>[\S0-9_.-\\s\- ]*)/$', ShowOrderOverviewView.as_view(), name="overview"),
     url(r'^unsubscribe/(?P<token>[\S0-9_.-\\s\- ]*)/$', UnsubscribeFromOrder.as_view(), name="unsubscribe"),
     url(r'^unsubscribe_successful/$', UnsubscribeFromOrderSuccessful.as_view(), name="unsubscribe_successful"),
-    url(r'^printing_2d/', include(urls_2d_printing.urlpatterns, namespace="printing_2d"), ),
-
+    url(r'^printing_2d/', include(urls_2d_printing.urlpatterns, namespace="printing_2d")),
+    url(r'^printing_3d/', include(urls_3d_printing.urlpatterns, namespace="printing_3d"))
 ]
