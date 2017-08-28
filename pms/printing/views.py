@@ -2,11 +2,13 @@ import secrets
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, CreateView, DetailView, FormView, UpdateView, DeleteView
+from django.views.generic import TemplateView, CreateView, DetailView, FormView, UpdateView, DeleteView, ListView
 
+from printing.filters import OrdersFilter
 from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription
 from printing.utils import CommentEmail
@@ -16,9 +18,7 @@ class HomeView(TemplateView):
     template_name = "printing/general/home.html"
 
 
-class DashboardView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
-    template_name = "printing/general/dashboard.html"
-    permission_required = "printing.dashboard_show"
+
 
 
 class SubscriptionView:
@@ -155,3 +155,30 @@ class UnsubscribeFromOrder(DeleteView):
 
 class UnsubscribeFromOrderSuccessful(TemplateView):
     template_name = 'printing/order/unsubscribe_successful.html'
+
+
+class ShowAllOrdersView(LoginRequiredMixin, PermissionRequiredMixin,ListView):
+    model = Order
+    template_name = 'printing/order/all_orders.html'
+    paginate_by = 20
+    permission_required = "printing.dashboard_show"
+
+    def _get_url_page(self, url_list, page):
+        paginator = Paginator(url_list, self.paginate_by)
+        try:
+            url_list = paginator.page(page)
+        except PageNotAnInteger:
+            url_list = paginator.page(1)
+        except EmptyPage:
+            url_list = paginator.page(paginator.num_pages)
+        return url_list
+
+    def get_context_data(self, **kwargs):
+        context = super(ShowAllOrdersView, self).get_context_data(**kwargs)
+        url_list = Order.objects.order_by('-create_date').all()
+
+        url_filter = OrdersFilter(self.request.GET, queryset=url_list)
+        context['url_list'] = self._get_url_page(url_filter.qs,
+                                                 self.request.GET.get('page'))
+        context['url_filter'] = url_filter
+        return context

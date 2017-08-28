@@ -5,7 +5,7 @@
     <li {% if request.path == url %} class="active"{% endif %}>
         <a href="{{ url }}"><i class="fa fa-fw fa-home"></i> {% trans "Home" %}</a>
     </li>
-    {% url "printing:dashboard" as url %}
+    {% url "printing:all_orders" as url %}
     <li {% if request.path == url %} class="active"{% endif %}>
         <a href="{{ url }}"><i class="fa fa-fw fa-dashboard"></i> {% trans "Dashboard" %}</a>
     </li>
