@@ -84,3 +84,15 @@ class StaffComment(Comment):
 
 class ExternalComment(Comment):
     customer = models.ForeignKey(Customer)
+
+
+class Subscription(models.Model):
+    customer = models.ForeignKey(Customer)
+    order = models.ForeignKey(Order)
+    token = models.CharField(max_length=30, blank=True, null=True)
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.token is None or len(self.token) == 0:
+            self.token = secrets.token_urlsafe(20)
+        models.Model.save(self, force_insert, force_update, using, update_fields)

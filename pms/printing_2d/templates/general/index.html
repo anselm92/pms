@@ -14,9 +14,9 @@
         <div class="col-lg-12">
 
             <div class="container">
-                {% url 'printing:printing_2d:script' as scripturl %}
-                <p>{% bootstrap_button "New Script order" button_type="link" button_class="btn-primary" href=scripturl %}</p>
-                {% url 'printing:printing_2d:custom' as customurl %}
+                {% url 'printing:printing_2d:script' "" as scripturl %}
+                <p>{% bootstrap_button "New script order" button_type="link" button_class="btn-primary" href=scripturl %}</p>
+                {% url "printing:printing_2d:custom" "" as customurl %}
                 <p>{% bootstrap_button "New custom order" button_type="link" button_class="btn-primary" href=customurl %}</p>
             </div>
         </div>

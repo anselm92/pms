@@ -5,10 +5,11 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, CreateView, DetailView, FormView, UpdateView
+from django.views.generic import TemplateView, CreateView, DetailView, FormView, UpdateView, DeleteView
 
 from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm
-from printing.models import Order, StaffCustomer, Comment, ExternalCustomer
+from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription
+from printing.utils import CommentEmail
 
 
 class HomeView(TemplateView):
@@ -18,6 +19,18 @@ class HomeView(TemplateView):
 class DashboardView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "printing/general/dashboard.html"
     permission_required = "printing.dashboard_show"
+
+
+class SubscriptionView:
+    def subscribe(self, order, customer):
+        subscription, created = Subscription.objects.get_or_create(order=order, customer=customer)
+        subscription.save()
+
+    def send_mail(self, order, customer):
+        subscriptions = Subscription.objects.filter(order=order).exclude(customer=customer)
+        for subscription in subscriptions:
+            mail = CommentEmail(order, subscription)
+            mail.send()
 
 
 class ShowOrderDetailView(DetailView):
@@ -48,7 +61,7 @@ class ShowOrderOverviewView(View):
         return view(request, *args, **kwargs)
 
 
-class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView):
+class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, SubscriptionView):
     success_message = "Order '%(title)s' was sent successful"
     login_url = reverse_lazy('printing:register_customer')
 
@@ -66,6 +79,8 @@ class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView):
         order: Order = form.save(commit=False)
         order.customer = StaffCustomer.objects.get(
             user=self.request.user) if is_authenticated else ExternalCustomer.objects.get(order_token=token)
+        order.save()
+        self.subscribe(order, order.customer)
         return super(CreateOrderView, self).form_valid(form)
 
 
@@ -91,7 +106,7 @@ class CreateExternalCustomerView(FormView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class CreateExternalCommentView(FormView):
+class CreateExternalCommentView(FormView, SubscriptionView):
     template_name = "printing/order/order_overview.html"
     form_class = ExternalCommentForm
 
@@ -103,13 +118,15 @@ class CreateExternalCommentView(FormView):
                                                                   last_name=form.cleaned_data['last_name'],
                                                                   mail_address=form.cleaned_data['mail_address'])[0]
         comment.save()
+        self.subscribe(comment.order, comment.customer)
+        self.send_mail(comment.order, comment.customer)
         return super(CreateExternalCommentView, self).form_valid(form)
 
     def get_success_url(self):
         return reverse('printing:overview', kwargs={'order_hash': self.kwargs['order_hash']})
 
 
-class CreateStaffCommentView(FormView):
+class CreateStaffCommentView(FormView, SubscriptionView):
     template_name = "printing/order/order_overview.html"
     form_class = StaffCommentBaseForm
 
@@ -118,7 +135,23 @@ class CreateStaffCommentView(FormView):
         comment.order = Order.objects.get(order_hash=self.kwargs['order_hash'])
         comment.user = self.request.user
         comment.save()
+        staff_customer = StaffCustomer.objects.get(user=comment.user)
+        self.subscribe(comment.order, staff_customer)
+        self.send_mail(comment.order, staff_customer) if comment.public else None
         return super(CreateStaffCommentView, self).form_valid(form)
 
     def get_success_url(self):
         return reverse('printing:overview', kwargs={'order_hash': self.kwargs['order_hash']})
+
+
+class UnsubscribeFromOrder(DeleteView):
+    model = Subscription
+    slug_url_kwarg = "token"
+    slug_field = "token"
+    context_object_name = 'subscription'
+    template_name = 'printing/order/unsubscribe.html'
+    success_url = reverse_lazy('printing:unsubscribe_successful')
+
+
+class UnsubscribeFromOrderSuccessful(TemplateView):
+    template_name = 'printing/order/unsubscribe_successful.html'

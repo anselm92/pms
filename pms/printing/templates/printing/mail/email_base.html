@@ -1,0 +1,19 @@
+{% load staticfiles %}
+
+<div style="background:#f2f2f2;padding:40px 0;">
+    <div style="width:700px;background:#fff;border-style:solid;border-width:1px;border-color:#eaeaea #cccccc #a6a6a6;border-radius:4px;box-shadow:0 2px 2px #cdcdcd;margin:0 auto;">
+        <img src="https://mpi.fs.tum.de/wordpress/wp-content/uploads/2015/12/fslogo.svg" alt=""
+             style="display:block;margin:20px 0 15px 50px;" width="auto" height="100px"/>
+        <div style="padding:30px 55px 40px;min-height:300px;border-top:1px solid #efefef;background:transparent url('https://cloud.bwk-technik.de/media/img/email_bg.jpg') scroll repeat-x center top;">
+            {% url 'printing:unsubscribe' subscription.token as unsubscribe %}
+            <p style="color:#121214;font-size:14px;">Hello {{ subscription.customer.first_name }},</p>
+
+            <p style="font-size:14px;color:#434144;">
+                {% block body %}
+
+                {% endblock %}
+            </p>
+            <a href="http://{{ site }}{{ unsubscribe }}">Unsubscribe from notifications</a>
+        </div>
+    </div>
+</div>

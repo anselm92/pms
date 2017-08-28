@@ -139,3 +139,19 @@ ECAPTCHA_PUBLIC_KEY = '6Ld9Xi4UAAAAAFJrnP9En_5YodT2uIQfH_pY1_eL'
 RECAPTCHA_PRIVATE_KEY = '6Ld9Xi4UAAAAAPFjPuVaCrvde9kR8Zr6ER0pCQCd'
 NOCAPTCHA = True
 RECAPTCHA_TESTING = True
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# Host for sending e-mail.
+EMAIL_HOST = 'mail.bwk-technik.de'
+# Port for sending e-mail.
+EMAIL_PORT = 587
+
+DEFAULT_FROM_EMAIL = 'PMS <test@bwk-technik.de>'
+
+# Optional SMTP authentication information for EMAIL_HOST.
+EMAIL_HOST_USER = 'testbwk@bwk-technik.de'
+EMAIL_HOST_PASSWORD = '3jfk6dCCGT75fHVFdd9987' #remove last letter
+EMAIL_USE_TLS = True
+
+SITE = "localhost:8000"

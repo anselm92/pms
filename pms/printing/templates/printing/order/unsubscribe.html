@@ -1,9 +1,9 @@
 {% extends "pms/base_generic.html" %}
 {% load i18n %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Unsubscribe{% endblock %}
 
-{% block page_title %}Enter your contact details{% endblock %}
+{% block page_title %}Unsubscribe{% endblock %}
 
 {% block content %}
     {# Load the tag library #}
@@ -14,15 +14,18 @@
 
             <form action="" class="col-sm-6" method="post">
                 {% csrf_token %}
-                {% bootstrap_form form %}
+                <p>Are you sure you want to unsubscribe from order {{ subscription.order.order_hash }}?</p>
                 {% buttons %}
                     <button type="submit" class="btn btn-primary">
-                        {% bootstrap_icon "send" %} Next
+                        {% bootstrap_icon "send" %} Unsubscribe
                     </button>
                 {% endbuttons %}
-
             </form>
-
         </div>
     </div>
 {% endblock %}
+
+
+
+
+

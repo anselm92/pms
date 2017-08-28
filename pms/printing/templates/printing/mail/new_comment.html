@@ -1,0 +1,9 @@
+{% extends 'printing/mail/email_base.html' %}
+
+{% block body %}
+{% url 'printing:overview' order.order_hash as overview %}
+
+  someone commented on a order your have subscribed on.<br>
+    See the order <a href="http://{{ site }}{{ overview }}">here</a>
+
+{% endblock %}
