@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 class Customer(models.Model):
     first_name = models.CharField(max_length=99)
     last_name = models.CharField(max_length=99)
-    mail_address = models.CharField(max_length=99)
+    mail_address = models.EmailField()
 
     def __str__(self):
         return '%s %s' % (self.first_name, self.last_name)
