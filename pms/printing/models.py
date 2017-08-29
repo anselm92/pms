@@ -97,3 +97,20 @@ class Subscription(models.Model):
         if self.token is None or len(self.token) == 0:
             self.token = secrets.token_urlsafe(20)
         models.Model.save(self, force_insert, force_update, using, update_fields)
+
+
+class OrderHistoryEntry(models.Model):
+    order = models.ForeignKey(Order)
+    description = models.TextField()
+    create_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.description
+
+
+class OrderHistoryStaffEntry(OrderHistoryEntry):
+    user = models.ForeignKey(User)
+
+
+class OrderHistoryExternalEntry(OrderHistoryEntry):
+    customer = models.ForeignKey(Customer)

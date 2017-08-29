@@ -10,7 +10,7 @@ from django.views.generic import TemplateView, CreateView, DetailView, FormView,
 
 from printing.filters import OrdersFilter
 from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm
-from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription
+from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry
 from printing.utils import CommentEmail
 
 
@@ -42,9 +42,14 @@ class ShowOrderDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ShowOrderDetailView, self).get_context_data(**kwargs)
+
         query_filter = {'order': self.get_object()}
         query_filter.update({'public': True} if not self.request.user.is_authenticated() else {})
         context['comments'] = Comment.objects.filter(**query_filter)
+
+        query_filter = {'order': self.get_object()}
+        context['history'] = OrderHistoryEntry.objects.filter(**query_filter)
+
         context['form'] = ExternalCommentForm() if not self.request.user.is_authenticated() else StaffCommentBaseForm()
         return context
 
