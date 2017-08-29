@@ -48,6 +48,7 @@ class Order(models.Model):
     # TODO: File path?
     customer = models.ForeignKey(Customer)
     status = models.SmallIntegerField(choices=ORDER_STATUS, default=ORDER_STATUS_OPEN)
+    assignee = models.ForeignKey(User, blank=True, null=True)
 
     def __str__(self):
         return self.title
