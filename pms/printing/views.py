@@ -42,6 +42,10 @@ class ShowOrderDetailView(DetailView):
     slug_url_kwarg = "order_hash"
     slug_field = "order_hash"
 
+    def get_queryset(self):
+        qs = super(ShowOrderDetailView, self).get_queryset()
+        return qs.filter(status__gt=0)
+
     def get_context_data(self, **kwargs):
         context = super(ShowOrderDetailView, self).get_context_data(**kwargs)
 
@@ -195,7 +199,7 @@ class ShowAllOrdersView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ShowAllOrdersView, self).get_context_data(**kwargs)
-        url_list = Order.objects.order_by('-create_date').all()
+        url_list = Order.objects.order_by('-create_date').filter(status__gt=0)
 
         url_filter = OrdersFilter(self.request.GET, queryset=url_list)
         context['url_list'] = self._get_url_page(url_filter.qs,
