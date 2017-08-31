@@ -12,9 +12,10 @@ from django.views.generic import TemplateView, CreateView, DetailView, FormView,
 
 from pms import settings
 from printing.filters import OrdersFilter
-from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm
+from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm, OrderBaseForm
 from printing.handlers import CONTENT_TYPES, convert_pdf_to_png
-from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry
+from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry, \
+    ORDER_STATUS_OPEN, ORDER_STATUS_PENDING
 from printing.utils import CommentEmail
 
 
@@ -68,7 +69,6 @@ class ShowOrderOverviewView(View):
 
 
 class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, SubscriptionView):
-    success_message = "Order '%(title)s' was sent successful"
     login_url = reverse_lazy('printing:register_customer')
 
     def test_func(self):
@@ -77,7 +77,7 @@ class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, Subs
         return True if (len(token) > 0 and len(customers) > 0 or self.request.user.is_authenticated()) else False
 
     def get_success_url(self):
-        return reverse('printing:overview', kwargs={'order_hash': self.object.order_hash})
+        return reverse('printing:preview', kwargs={'order_hash': self.object.order_hash})
 
     def form_valid(self, form):
         is_authenticated = self.request.user.is_authenticated()
@@ -110,9 +110,6 @@ class CreateExternalCustomerView(FormView):
     def get_success_url(self):
         token = self.object.order_token
         return self.request.GET.get('next') + token
-
-    def form_invalid(self, form):
-        return super(CreateExternalCustomerView, self).form_invalid(form)
 
     def form_valid(self, form):
         customer, exists = ExternalCustomer.objects.get_or_create(first_name=form.cleaned_data['first_name'],
@@ -200,6 +197,33 @@ class ShowAllOrdersView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
                                                  self.request.GET.get('page'))
         context['url_filter'] = url_filter
         return context
+
+
+class PreviewOrderView(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+    template_name = 'printing/order/order_preview.html'
+    model = Order
+    slug_url_kwarg = "order_hash"
+    slug_field = "order_hash"
+    success_message = "Order was sent successful"
+    fields = []
+
+    def test_func(self):
+        token = self.kwargs['order_hash']
+        customers = ExternalCustomer.objects.filter(order_token=token)
+        return True if (((len(token) > 0 and len(
+            customers) > 0 or self.request.user.is_authenticated()) and self.get_object().status == ORDER_STATUS_PENDING)) else False
+
+    def form_valid(self, form):
+        order: Order = form.save(commit=False)
+        order.status = ORDER_STATUS_OPEN
+        order.save()
+        return super(PreviewOrderView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('printing:overview', kwargs={'order_hash': self.object.order_hash})
+
+    def get_login_url(self):
+        return reverse('printing:404')
 
 
 class ServeOrderFiles(View):

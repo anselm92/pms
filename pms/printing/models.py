@@ -28,13 +28,14 @@ class CostCenter(models.Model):
     def __str__(self):
         return self.name
 
-
+ORDER_STATUS_PENDING = 0
 ORDER_STATUS_OPEN = 1
 ORDER_STATUS_IN_PROGRESS = 2
 ORDER_STATUS_DENIED = 3
 ORDER_STATUS_PRINTING = 4
 ORDER_STATUS_DONE = 5
-ORDER_STATUS = ((ORDER_STATUS_OPEN, 'Open'),
+ORDER_STATUS = ((ORDER_STATUS_PENDING, 'Pending'),
+                (ORDER_STATUS_OPEN, 'Open'),
                 (ORDER_STATUS_IN_PROGRESS, 'In Progress'),
                 (ORDER_STATUS_DENIED, 'Denied'),
                 (ORDER_STATUS_PRINTING, 'Printing'),
@@ -47,7 +48,7 @@ class Order(models.Model):
     order_hash = models.CharField(max_length=20, null=True, blank=True)
     create_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     customer = models.ForeignKey(Customer)
-    status = models.SmallIntegerField(choices=ORDER_STATUS, default=ORDER_STATUS_OPEN)
+    status = models.SmallIntegerField(choices=ORDER_STATUS, default=ORDER_STATUS_PENDING)
     assignee = models.ForeignKey(User, blank=True, null=True)
     file = models.FileField(default=None, null=True,
                             upload_to=order_files_upload_handler,
