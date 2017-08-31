@@ -2,7 +2,6 @@ import secrets
 
 from django.db import models
 from django.contrib.auth.models import User
-
 from printing.handlers import order_files_upload_handler, fs
 
 
@@ -47,7 +46,6 @@ class Order(models.Model):
     amount = models.IntegerField()
     order_hash = models.CharField(max_length=20, null=True, blank=True)
     create_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    # TODO: File path?
     customer = models.ForeignKey(Customer)
     status = models.SmallIntegerField(choices=ORDER_STATUS, default=ORDER_STATUS_OPEN)
     assignee = models.ForeignKey(User, blank=True, null=True)
@@ -55,6 +53,7 @@ class Order(models.Model):
                             upload_to=order_files_upload_handler,
                             storage=fs)
     file_name = models.CharField(max_length=40, blank=True)
+    file_thumbnail_path = models.CharField(max_length=256, blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -63,6 +62,7 @@ class Order(models.Model):
              update_fields=None):
         if self.order_hash is None or len(self.order_hash) == 0:
             self.order_hash = secrets.token_urlsafe(20)
+        self.file_thumbnail_path = self.file.name.replace('.pdf', '.png')
         models.Model.save(self, force_insert, force_update, using, update_fields)
 
 

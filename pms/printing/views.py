@@ -13,7 +13,7 @@ from django.views.generic import TemplateView, CreateView, DetailView, FormView,
 from pms import settings
 from printing.filters import OrdersFilter
 from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm
-from printing.handlers import CONTENT_TYPES
+from printing.handlers import CONTENT_TYPES, convert_pdf_to_png
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry
 from printing.utils import CommentEmail
 
@@ -92,8 +92,14 @@ class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, Subs
         else:
             ExternalCustomer.objects.get(order_token=token)
         order.save()
+        if self.is_pdf(order.file.path):
+            convert_pdf_to_png(order.file.path)
+
         self.subscribe(order, order.customer)
         return super(CreateOrderView, self).form_valid(form)
+
+    def is_pdf(self, path):
+        return os.path.splitext(path)[1] == '.pdf'
 
 
 class CreateExternalCustomerView(FormView):
