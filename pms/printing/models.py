@@ -3,6 +3,8 @@ import secrets
 from django.db import models
 from django.contrib.auth.models import User
 
+from printing.handlers import order_files_upload_handler, fs
+
 
 class Customer(models.Model):
     first_name = models.CharField(max_length=99)
@@ -49,6 +51,10 @@ class Order(models.Model):
     customer = models.ForeignKey(Customer)
     status = models.SmallIntegerField(choices=ORDER_STATUS, default=ORDER_STATUS_OPEN)
     assignee = models.ForeignKey(User, blank=True, null=True)
+    file = models.FileField(default=None, null=True,
+                            upload_to=order_files_upload_handler,
+                            storage=fs)
+    file_name = models.CharField(max_length=40, blank=True)
 
     def __str__(self):
         return self.title

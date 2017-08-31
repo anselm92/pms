@@ -5,3 +5,5 @@ SECRET_KEY = 'v+ae91=#6mgr!sm*3lk3n9!rag_)5y)lk@pj$+she!&7t7=yy8'
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]']
+
+FILES_ROOT = '/opt/pms/'

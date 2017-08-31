@@ -1,24 +1,25 @@
 import secrets
 
+import os
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound
+from django.template import RequestContext, loader
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, CreateView, DetailView, FormView, UpdateView, DeleteView, ListView
 
+from pms import settings
 from printing.filters import OrdersFilter
 from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm
+from printing.handlers import CONTENT_TYPES
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry
 from printing.utils import CommentEmail
 
 
 class HomeView(TemplateView):
     template_name = "printing/general/home.html"
-
-
-
 
 
 class SubscriptionView:
@@ -82,6 +83,7 @@ class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, Subs
         is_authenticated = self.request.user.is_authenticated()
         token = self.kwargs['order_token']
         order: Order = form.save(commit=False)
+        order.file_name = form.cleaned_data['file']
         if is_authenticated:
             order.customer, _ = StaffCustomer.objects.get_or_create(first_name=self.request.user.first_name,
                                                                     last_name=self.request.user.last_name,
@@ -167,7 +169,7 @@ class UnsubscribeFromOrderSuccessful(TemplateView):
     template_name = 'printing/order/unsubscribe_successful.html'
 
 
-class ShowAllOrdersView(LoginRequiredMixin, PermissionRequiredMixin,ListView):
+class ShowAllOrdersView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Order
     template_name = 'printing/order/all_orders.html'
     paginate_by = 20
@@ -192,3 +194,23 @@ class ShowAllOrdersView(LoginRequiredMixin, PermissionRequiredMixin,ListView):
                                                  self.request.GET.get('page'))
         context['url_filter'] = url_filter
         return context
+
+
+class ServeOrderFiles(View):
+    def get(self, request, order_hash, file):
+        path = os.path.join(settings.FILES_ROOT, order_hash, file)
+        if os.path.isfile(path):
+            file_extension = os.path.splitext(path)[1].lower()
+            image_data = open(path, "rb").read()
+            content_type = CONTENT_TYPES.get(file_extension)
+            if not content_type:
+                content_type = 'application/' + file_extension[1:]
+            return HttpResponse(image_data, content_type=content_type)
+        return self.raise_404(request)
+
+    def post(self, request):
+        return HttpResponseNotAllowed('GET')
+
+    def raise_404(self, request):
+        t = loader.get_template('errors/404.html')
+        return HttpResponseNotFound(t.render({}))

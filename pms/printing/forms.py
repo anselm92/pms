@@ -7,7 +7,7 @@ from printing.models import Order, Material, Comment, StaffComment, ExternalComm
 class OrderBaseForm(ModelForm):
     class Meta:
         model = Order
-        fields = ['title', 'amount']
+        fields = ['title', 'amount', 'file']
 
 
 class MaterialBaseForm(ModelForm):
