@@ -1,5 +1,6 @@
 import secrets
 
+import os
 from django.db import models
 from django.contrib.auth.models import User
 from printing.handlers import order_files_upload_handler, fs
@@ -63,7 +64,7 @@ class Order(models.Model):
              update_fields=None):
         if self.order_hash is None or len(self.order_hash) == 0:
             self.order_hash = secrets.token_urlsafe(20)
-        self.file_thumbnail_path = self.file.name.replace('.pdf', '.png')
+        self.file_thumbnail_path = self.file.name.replace(os.path.splitext(self.file.name)[1], '.png')
         models.Model.save(self, force_insert, force_update, using, update_fields)
 
 
