@@ -30,6 +30,7 @@
                 <table class="table">
                     <thead>
                     <tr>
+                        <th></th>
                         <th>Title / Hash</th>
                         <th></th>
                         <th>Type</th>
@@ -41,29 +42,38 @@
                     <tbody>
                     {% for order in url_list %}
 
-                        <tr>
-                            {% url 'printing:overview' order.order_hash as link %}
-                            <th scope="row"><a href="{{ link }}">{{ order.title }}</a>
-                                <br>
-                                <small>{{ order.order_hash }}</small>
-                            </th>
-                            {% with order.comment_set.all.last as last_comment %}
-                                <td>{{ order.comment_set.all|length }} comments
-                                <br>
-                                <small>{% if last_comment %}Last commented
-                                    <b>{{ last_comment.create_date | timesince }}</b> ago
 
-                                    by <i>{% if  last_comment.staffcomment %}
-                                        {{ last_comment.staffcomment.user }}{% else %}
-                                        {{ last_comment.externalcomment.customer }}{% endif %}</i>
-                                    <br>
-                                    <i>"{{ last_comment.text|truncatechars:30 }}"</i>{% endif %}
-                                </small>{% endwith %}
-                            </td>
-                            <td>-</td>
-                            <td>{{ order.create_date }}</td>
-                            <td>{{ order.customer }}</td>
-                            <td>{{ order.status }}</td>
+                        {% url 'printing:overview' order.order_hash as link %}
+                        <th>
+                            <div style="display: table-cell;">
+                                <img
+                                        src="/media/{{ order.file_thumbnail_path }}"
+                                        alt="..."
+                                        style="height: 50px"
+                                        class="img-responsive"/>
+                            </div>
+                        </th>
+                        <th scope="row"><a href="{{ link }}">{{ order.title }}</a>
+                            <br>
+                            <small>{{ order.order_hash }}</small>
+                        </th>
+                        {% with order.comment_set.all.last as last_comment %}
+                            <td>{{ order.comment_set.all|length }} comments
+                            <br>
+                            <small>{% if last_comment %}Last commented
+                                <b>{{ last_comment.create_date | timesince }}</b> ago
+
+                                by <i>{% if  last_comment.staffcomment %}
+                                    {{ last_comment.staffcomment.user }}{% else %}
+                                    {{ last_comment.externalcomment.customer }}{% endif %}</i>
+                                <br>
+                                <i>"{{ last_comment.text|truncatechars:30 }}"</i>{% endif %}
+                            </small>{% endwith %}
+                    </td>
+                        <td>-</td>
+                        <td>{{ order.create_date }}</td>
+                        <td>{{ order.customer }}</td>
+                        <td>{{ order.status }}</td>
 
                         </tr>
 
