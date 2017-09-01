@@ -1,0 +1,31 @@
+{% extends "pms/base_generic.html" %}
+{% load i18n %}
+
+{% block title %}Cancel order{% endblock %}
+
+{% block page_title %}Cancel order{% endblock %}
+
+{% block content %}
+    {# Load the tag library #}
+    {% load bootstrap3 %}
+    <div class="row">
+        <div class="col-lg-12">
+
+            <form action="" class="col-sm-6" method="post">
+                {% csrf_token %}
+            {% bootstrap_form form %}
+                <p>Are you sure you want to cancel order {{ order.order_hash }}?</p>
+                {% buttons %}
+                    <button type="submit" class="btn btn-primary">
+                        {% bootstrap_icon "cancel" %} Cancel
+                    </button>
+                {% endbuttons %}
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+

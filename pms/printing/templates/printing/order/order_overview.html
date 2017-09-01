@@ -59,21 +59,13 @@
 
                 <div class="row">
                     <div class="col-md-12 form-group">
-                        <a class="btn btn-danger btn-block pull-right" href="#">Cancel order</a><br/>
+                        {% url 'printing:cancel_order' order.order_hash as cancel_order %}
+                        <a class="btn btn-danger btn-block pull-right" href="{{ cancel_order }}">Cancel order</a><br/>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 form-group">
                         <a class="btn btn-info btn-block pull-right" href="#">Download invoice</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 form-group">
-                        {% buttons %}
-                            <button class="btn btn-block btn-primary">
-                                Save
-                            </button>
-                        {% endbuttons %}
                     </div>
                 </div>
                 <div class="row">
@@ -89,6 +81,16 @@
 
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        {% buttons %}
+                            <button class="btn btn-block btn-primary">
+                                Save
+                            </button>
+                        {% endbuttons %}
+                    </div>
+                </div>
+
             </div>
         </form>
 

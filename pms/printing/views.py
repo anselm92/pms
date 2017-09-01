@@ -1,12 +1,14 @@
 import os
 import secrets
 
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.forms import model_to_dict
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound
+from django.shortcuts import render
 from django.template import loader
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -14,10 +16,10 @@ from django.views.generic import TemplateView, CreateView, DetailView, FormView,
 
 from pms import settings
 from printing.filters import OrdersFilter
-from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm
+from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm, CancelOrderForm
 from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, process_stl
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry, \
-    ORDER_STATUS_OPEN, ORDER_STATUS_PENDING
+    ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED
 from printing.utils import CommentEmail
 
 
@@ -67,6 +69,29 @@ class ShowOrderDetailView(DetailView, UpdateView):
         return context
 
 
+class CancelOrderView(UpdateView):
+    template_name = "printing/order/cancel_order.html"
+    model = Order
+    context_object_name = 'order'
+    slug_url_kwarg = "order_hash"
+    slug_field = "order_hash"
+    form_class = CancelOrderForm
+
+    def get_success_url(self):
+        return reverse('printing:overview', kwargs={'order_hash': self.kwargs['order_hash']})
+
+    def form_invalid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        messages.warning(self.request, 'Can not cancel an order not in state open')
+        return self.render_to_response(context)
+
+    def form_valid(self, form):
+        order = form.save(commit=False)
+        order.status = ORDER_STATUS_DENIED
+        order.save()
+        return super(CancelOrderView, self).form_valid(form)
+
+
 class ShowOrderOverviewView(View):
     @staticmethod
     def get(request, *args, **kwargs):
@@ -85,7 +110,7 @@ class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, Subs
     def get_initial(self):
         token = self.kwargs['order_token']
         order = Order.objects.filter(order_hash=token).select_subclasses().first()
-        return {} if not order else model_to_dict(order)
+        return {} if not order else model_to_dict(order, exclude=['status'])
 
     def test_func(self):
         token = self.kwargs['order_token']
