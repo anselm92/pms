@@ -146,7 +146,7 @@ class CreateExternalCommentView(FormView, SubscriptionView):
                                                                   last_name=form.cleaned_data['last_name'],
                                                                   mail_address=form.cleaned_data['mail_address'])[0]
         comment.save()
-        self.subscribe(comment.order, comment.customer)
+        self.subscribe(comment.order, comment.customer) if form.cleaned_data['subscribe_for_notifications'] else None
         self.send_mail(comment.order, comment.customer)
         return super(CreateExternalCommentView, self).form_valid(form)
 
@@ -164,7 +164,7 @@ class CreateStaffCommentView(FormView, SubscriptionView):
         comment.user = self.request.user
         comment.save()
         staff_customer = StaffCustomer.objects.get(user=comment.user)
-        self.subscribe(comment.order, staff_customer)
+        self.subscribe(comment.order, staff_customer) if form.cleaned_data['subscribe_for_notifications'] else None
         self.send_mail(comment.order, staff_customer) if comment.public else None
         return super(CreateStaffCommentView, self).form_valid(form)
 

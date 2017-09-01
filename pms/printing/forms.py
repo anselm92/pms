@@ -1,5 +1,5 @@
 from captcha.fields import ReCaptchaField
-from django.forms import ModelForm, CharField, EmailField
+from django.forms import ModelForm, CharField, EmailField, CheckboxInput, BooleanField
 
 from printing.models import Order, Material, Comment, StaffComment, ExternalComment, Customer, ExternalCustomer
 
@@ -17,12 +17,15 @@ class MaterialBaseForm(ModelForm):
 
 
 class CommentBaseForm(ModelForm):
+    subscribe_for_notifications = BooleanField(required=False)
+
     class Meta:
         model = Comment
         fields = ['text']
 
 
 class StaffCommentBaseForm(CommentBaseForm):
+
     class Meta(CommentBaseForm.Meta):
         model = StaffComment
         fields = CommentBaseForm.Meta.fields + ['public']
