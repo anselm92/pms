@@ -3,7 +3,9 @@ import secrets
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.forms import model_to_dict
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound
 from django.template import loader
 from django.urls import reverse, reverse_lazy
@@ -60,7 +62,8 @@ class ShowOrderDetailView(DetailView, UpdateView):
         query_filter = {'order': self.get_object()}
         context['history'] = OrderHistoryEntry.objects.filter(**query_filter)
 
-        context['comment_form'] = ExternalCommentForm() if not self.request.user.is_authenticated() else StaffCommentBaseForm()
+        context[
+            'comment_form'] = ExternalCommentForm() if not self.request.user.is_authenticated() else StaffCommentBaseForm()
         return context
 
 
@@ -78,6 +81,11 @@ class ShowOrderOverviewView(View):
 
 class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, SubscriptionView):
     login_url = reverse_lazy('printing:register_customer')
+
+    def get_initial(self):
+        token = self.kwargs['order_token']
+        order = Order.objects.filter(order_hash=token).select_subclasses().first()
+        return {} if not order else model_to_dict(order)
 
     def test_func(self):
         token = self.kwargs['order_token']

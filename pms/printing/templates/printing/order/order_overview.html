@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-md-12">
             {% include 'printing/order/order_progress.html' %}
-    </div>
+        </div>
     </div>
     <div class="row">
         {% url 'printing:update_order' order.order_hash as update_url %}
@@ -74,6 +74,19 @@
                                 Save
                             </button>
                         {% endbuttons %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        {% if order.scriptorder %}
+                            {% url 'printing:printing_2d:script' order.order_hash as copy_url %}
+                        {% elif order.customorder2d %}
+                            {% url 'printing:printing_2d:custom' order.order_hash as copy_url %}
+                        {% elif order.order3d %}
+                            {% url 'printing:printing_3d:order_3d' order.order_hash as copy_url %}
+                        {% endif %}
+                        <a class="btn btn-info btn-block pull-right" href="{{ copy_url }}">Duplicate order</a>
+
                     </div>
                 </div>
             </div>

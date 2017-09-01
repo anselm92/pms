@@ -3,6 +3,8 @@ import secrets
 import os
 from django.db import models
 from django.contrib.auth.models import User
+from model_utils.managers import InheritanceManager
+
 from printing.handlers import order_files_upload_handler, fs, _delete_order
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
@@ -59,6 +61,7 @@ class Order(models.Model):
                             storage=fs)
     file_name = models.CharField(max_length=40, blank=True)
     file_thumbnail_path = models.CharField(max_length=256, blank=True, null=True)
+    objects = InheritanceManager()
 
     def __str__(self):
         return self.title
