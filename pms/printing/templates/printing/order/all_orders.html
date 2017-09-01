@@ -60,7 +60,7 @@
                             <small>{{ order.order_hash }}</small>
                         </td>
                         {% with order.comment_set.all.last as last_comment %}
-                            <td style="max-width:180px">{{ order.comment_set.all|length }} comments
+                            <td style="max-width:200px">{{ order.comment_set.all|length }} comments
                             <br>
                             <small>{% if last_comment %}Last commented
                                 <b>{{ last_comment.create_date | timesince }}</b> ago
@@ -73,7 +73,7 @@
                             </small>{% endwith %}
                     </td>
                         <td>-</td>
-                        <td>{{ order.create_date }}</td>
+                        <td style="max-width:100px"> {{ order.create_date }}</td>
                         <td>{{ order.customer }}</td>
                         <td style="min-width:150px">
                             {% include 'printing/order/order_progress.html' %}
