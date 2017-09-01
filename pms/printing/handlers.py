@@ -5,6 +5,7 @@ from django.core.files.storage import FileSystemStorage
 import logging
 
 from pms import settings
+from pms.settings import FILES_ROOT
 
 fs = FileSystemStorage(location=settings.FILES_ROOT)
 logger = logging.getLogger(__name__)
@@ -61,3 +62,13 @@ def process_stl(stl, order):
         pyplot.savefig(stl.replace('.stl', '.png'))
     except:
         logger.error('Could not convert stl to png. Please check your numpy and matplotlib installation')
+
+
+def _delete_order(order_hash):
+    """ Deletes file from filesystem. """
+    path = os.path.join(FILES_ROOT, order_hash)
+    print(path)
+    for root, dirs, files in os.walk(path, topdown=False):
+        for file in files:
+            os.remove(os.path.join(path, file))
+    os.rmdir(path)

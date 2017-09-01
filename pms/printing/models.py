@@ -3,7 +3,9 @@ import secrets
 import os
 from django.db import models
 from django.contrib.auth.models import User
-from printing.handlers import order_files_upload_handler, fs
+from printing.handlers import order_files_upload_handler, fs, _delete_order
+from django.db.models.signals import pre_delete
+from django.dispatch.dispatcher import receiver
 
 
 class Customer(models.Model):
@@ -28,6 +30,7 @@ class CostCenter(models.Model):
 
     def __str__(self):
         return self.name
+
 
 ORDER_STATUS_PENDING = 0
 ORDER_STATUS_OPEN = 1
@@ -122,3 +125,9 @@ class OrderHistoryStaffEntry(OrderHistoryEntry):
 
 class OrderHistoryExternalEntry(OrderHistoryEntry):
     customer = models.ForeignKey(Customer)
+
+
+# Delete files not only db object
+@receiver(pre_delete, sender=Order)
+def order_delete(sender, instance, **kwargs):
+    _delete_order(instance.order_hash)
