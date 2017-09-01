@@ -8,6 +8,6 @@ class Material3d(Material):
 
 class Order3d(Order):
     material = models.ForeignKey(Material3d)
-    width = models.FloatField()
-    height = models.FloatField()
-    depth = models.FloatField()
+    width = models.FloatField(default=0, blank=True, null=True)
+    height = models.FloatField(default=0, blank=True, null=True)
+    depth = models.FloatField(default=0, blank=True, null=True)

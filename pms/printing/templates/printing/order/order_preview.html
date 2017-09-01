@@ -35,16 +35,20 @@
                 {% include 'order/order_overview_script.html' %}
             {% elif order.customorder2d %}
                 {% include 'order/order_overview_custom.html' %}
+            {% elif order.order3d %}
+                {% include 'order/order_overview_3d.html' %}
+
             {% endif %}
         </table>
     </div>
     <div class="row">
         <div class="col-sm-12">
-
-            <form action="" enctype="multipart/form-data" class="col-sm-offset-9 col-sm-3 float-right" method="post">
+            <form action="" enctype="multipart/form-data" class="col-sm-3 " method="post">
                 {% csrf_token %}
+                {% bootstrap_form form %}
                 {% buttons %}
                     <button type="submit" class="btn btn-primary ">
+
                         {% bootstrap_icon "send" %} Submit
                     </button>
                 {% endbuttons %}

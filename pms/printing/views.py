@@ -1,19 +1,19 @@
+import os
 import secrets
 
-import os
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound
-from django.template import RequestContext, loader
+from django.template import loader
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, CreateView, DetailView, FormView, UpdateView, DeleteView, ListView
 
 from pms import settings
 from printing.filters import OrdersFilter
-from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm, OrderBaseForm
-from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, convert_stl_to_png
+from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm
+from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, process_stl
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry, \
     ORDER_STATUS_OPEN, ORDER_STATUS_PENDING
 from printing.utils import CommentEmail
@@ -94,12 +94,12 @@ class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, Subs
                                                                     mail_address=self.request.user.email,
                                                                     user=self.request.user)
         else:
-            ExternalCustomer.objects.get(order_token=token)
+            order.customer = ExternalCustomer.objects.get(order_token=token)
         order.save()
         if self.is_pdf(order.file.path):
             convert_pdf_to_png(order.file.path)
         if self.is_stl(order.file.path):
-            convert_stl_to_png(order.file.path)
+            process_stl(order.file.path, order)
 
         self.subscribe(order, order.customer)
         return super(CreateOrderView, self).form_valid(form)
@@ -218,9 +218,9 @@ class PreviewOrderView(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
 
     def test_func(self):
         token = self.kwargs['order_hash']
-        customers = ExternalCustomer.objects.filter(order_token=token)
-        return True if (((len(token) > 0 and len(
-            customers) > 0 or self.request.user.is_authenticated()) and self.get_object().status == ORDER_STATUS_PENDING)) else False
+        # customers = ExternalCustomer.objects.filter(order_token=token)
+        return True if ((len(
+            token) > 0 and self.get_object().status == ORDER_STATUS_PENDING)) else False
 
     def form_valid(self, form):
         order: Order = form.save(commit=False)

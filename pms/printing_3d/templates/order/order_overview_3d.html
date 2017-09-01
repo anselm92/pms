@@ -1,0 +1,46 @@
+{% load i18n %}
+
+<div class="panel-body">
+    <div class="col-sm-12">
+        <div class="col-sm-9">
+            <div class="row">
+
+                <div class="col-sm-8 col-xs-8">
+                    <h5 class="nomargin">{% trans 'Material' %}</h5>
+                </div>
+                <div class="col-sm-4 hidden-xs">
+                    {{ order.order3d.material }}
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-sm-8 col-xs-8">
+                    <h5 class="nomargin">{% trans 'Width' %}</h5>
+                </div>
+                <div class="col-sm-4 hidden-xs">
+                    {{ order.order3d.width }}
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-sm-8 col-xs-8">
+                    <h5 class="nomargin">{% trans 'Depth' %}</h5>
+                </div>
+                <div class="col-sm-4 hidden-xs">
+                    {{ order.order3d.depth }}
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-sm-8 col-xs-8">
+                    <h5 class="nomargin">{% trans 'Height' %}</h5>
+                </div>
+                <div class="col-sm-4 hidden-xs">
+                    {{ order.order3d.height }}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

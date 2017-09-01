@@ -1,12 +1,8 @@
 import secrets
 import os
 
-import matplotlib
 from django.core.files.storage import FileSystemStorage
 import logging
-
-from matplotlib import pyplot
-from stl import mesh
 
 from pms import settings
 
@@ -38,9 +34,15 @@ def convert_pdf_to_png(pdf):
         logger.error('Could not convert pdf to png. Please check your imagemagick and wand installation')
 
 
-def convert_stl_to_png(stl):
+def process_stl(stl, order):
     try:
+        import matplotlib
         matplotlib.use('Agg')
+        from matplotlib import pyplot
+
+        from numpy.ma import subtract
+        from stl import mesh
+
         mesh_file = mesh.Mesh.from_file(stl)
         from mpl_toolkits import mplot3d
         figure = pyplot.figure()
@@ -49,7 +51,11 @@ def convert_stl_to_png(stl):
         # Load the STL files and add the vectors to the plot
         axes.add_collection3d(mplot3d.art3d.Poly3DCollection(mesh_file.vectors))
 
-        # Auto scale to the mesh size
+        size = subtract(mesh_file.max_, mesh_file.min_)
+        order.width = size[0]
+        order.depth = size[1]
+        order.height = size[2]
+        order.save()
         scale = mesh_file.points.flatten(-1)
         axes.auto_scale_xyz(scale, scale, scale)
         pyplot.savefig(stl.replace('.stl', '.png'))

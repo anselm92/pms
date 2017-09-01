@@ -13,11 +13,11 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-2 hidden-xs"><img
+        <div class="col-md-3 hidden-xs"><img
                 src="/media/{{ order.file_thumbnail_path }}"
                 alt="..."
                 class="img-responsive"/></div>
-        <div class="col-md-8">
+        <div class="col-md-7">
             <table class="table">
                 <tr>
                     <td>{% trans 'Ordernr.' %}:</td>
@@ -35,6 +35,8 @@
                     {% include 'order/order_overview_script.html' %}
                 {% elif order.customorder2d %}
                     {% include 'order/order_overview_custom.html' %}
+                {% elif order.order3d %}
+                    {% include 'order/order_overview_3d.html' %}
                 {% endif %}
             </table>
         </div>
