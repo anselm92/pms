@@ -1,6 +1,8 @@
 {% extends "pms/base_generic.html" %}
 {% load i18n %}
 {% load bootstrap3 %}
+{% load templatefilters %}
+
 {% block title %}Order overview{% endblock %}
 
 {% block page_title %}Order overview{% endblock %}
@@ -44,21 +46,21 @@
 
 
                         {% url 'printing:overview' order.order_hash as link %}
-                        <th>
+                        <td>
                             <div style="display: table-cell;">
                                 <img
                                         src="/media/{{ order.file_thumbnail_path }}"
                                         alt="..."
-                                        style="height: 50px"
+                                        style="height: 40px"
                                         class="img-responsive"/>
                             </div>
-                        </th>
-                        <th scope="row"><a href="{{ link }}">{{ order.title }}</a>
+                        </td>
+                        <td style="max-width:130px" scope="row"><a href="{{ link }}">{{ order.title }}</a>
                             <br>
                             <small>{{ order.order_hash }}</small>
-                        </th>
+                        </td>
                         {% with order.comment_set.all.last as last_comment %}
-                            <td>{{ order.comment_set.all|length }} comments
+                            <td style="max-width:180px">{{ order.comment_set.all|length }} comments
                             <br>
                             <small>{% if last_comment %}Last commented
                                 <b>{{ last_comment.create_date | timesince }}</b> ago
@@ -73,7 +75,12 @@
                         <td>-</td>
                         <td>{{ order.create_date }}</td>
                         <td>{{ order.customer }}</td>
-                        <td>{{ order.status }}</td>
+                        <td style="min-width:150px">
+                            {% include 'printing/order/order_progress.html' %}
+                            <div style="margin-top: -15px">
+                                <small><b>Assignee: </b>{{ order.assignee }}</small>
+                            </div>
+                        </td>
 
                         </tr>
 

@@ -9,50 +9,76 @@
 {% endblock head %}
 {% block title %}Order - {{ order.title }}{% endblock %}
 
-{% block page_title %}Order - {{ order.title }}{% endblock %}
+{% block page_title %}Order - {{ order.title }}
+{% endblock %}
 
 {% block content %}
     <div class="row">
-        <div class="col-md-3 hidden-xs"><img
-                src="/media/{{ order.file_thumbnail_path }}"
-                alt="..."
-                class="img-responsive"/></div>
-        <div class="col-md-7">
-            <table class="table">
-                <tr>
-                    <td>{% trans 'Ordernr.' %}:</td>
-                    <td>{{ order.id }}</td>
-                </tr>
-                <tr>
-                    <td>{% trans 'Orderdate' %}:</td>
-                    <td>{{ order.create_date }}</td>
-                </tr>
-                <tr>
-                    <td>{% trans 'State' %}:</td>
-                    <td>{{ order.status|order_status }}</td>
-                </tr>
-                {% if order.scriptorder %}
-                    {% include 'order/order_overview_script.html' %}
-                {% elif order.customorder2d %}
-                    {% include 'order/order_overview_custom.html' %}
-                {% elif order.order3d %}
-                    {% include 'order/order_overview_3d.html' %}
-                {% endif %}
-            </table>
-        </div>
-        <div class="col-md-2">
+        <div class="col-md-12">
+            {% include 'printing/order/order_progress.html' %}
+    </div>
+    </div>
+    <div class="row">
+        {% url 'printing:update_order' order.order_hash as update_url %}
+        <form action="{{ update_url }}" method="post">
+            <div class="col-md-3 hidden-xs"><img
+                    src="/media/{{ order.file_thumbnail_path }}"
+                    alt="..."
+                    class="img-responsive"/></div>
+            <div class="col-md-7">
 
-            <div class="row">
-                <div class="col-md-12 form-group">
-                    <a class="btn btn-danger pull-right" href="#">Cancel order</a><br/>
+
+                <table class="table">
+                    <tr>
+                        <td>{% trans 'Ordernr.' %}:</td>
+                        <td>{{ order.id }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans 'Orderdate' %}:</td>
+                        <td>{{ order.create_date }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans 'State' %}:</td>
+                        <td>{{ order.status|order_status }}</td>
+                    </tr>
+                    {% if order.scriptorder %}
+                        {% include 'order/order_overview_script.html' %}
+                    {% elif order.customorder2d %}
+                        {% include 'order/order_overview_custom.html' %}
+                    {% elif order.order3d %}
+                        {% include 'order/order_overview_3d.html' %}
+                    {% endif %}
+                </table>
+
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <input type="hidden" name="">
+
+            </div>
+            <div class="col-md-2">
+
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <a class="btn btn-danger btn-block pull-right" href="#">Cancel order</a><br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <a class="btn btn-info btn-block pull-right" href="#">Download invoice</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        {% buttons %}
+                            <button class="btn btn-block btn-primary">
+                                Save
+                            </button>
+                        {% endbuttons %}
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12 form-group">
-                    <a class="btn btn-info pull-right" href="#">Download invoice</a>
-                </div>
-            </div>
-        </div>
+        </form>
+
     </div>
 
     <div class="row panel">
@@ -70,7 +96,7 @@
             <h4>New comment</h4>
             <form action="" method="post">
                 {% csrf_token %}
-                {% bootstrap_form form %}
+                {% bootstrap_form comment_form %}
                 <input type="hidden" name="">
                 {% buttons %}
                     <button class="btn btn-primary">

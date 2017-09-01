@@ -35,16 +35,20 @@ class SubscriptionView:
             mail.send()
 
 
-class ShowOrderDetailView(DetailView):
+class ShowOrderDetailView(DetailView, UpdateView):
     template_name = "printing/order/order_overview.html"
     model = Order
     context_object_name = 'order'
     slug_url_kwarg = "order_hash"
     slug_field = "order_hash"
+    fields = ['status', 'assignee']
 
     def get_queryset(self):
         qs = super(ShowOrderDetailView, self).get_queryset()
         return qs.filter(status__gt=0)
+
+    def get_success_url(self):
+        return reverse('printing:overview', kwargs={'order_hash': self.kwargs['order_hash']})
 
     def get_context_data(self, **kwargs):
         context = super(ShowOrderDetailView, self).get_context_data(**kwargs)
@@ -56,7 +60,7 @@ class ShowOrderDetailView(DetailView):
         query_filter = {'order': self.get_object()}
         context['history'] = OrderHistoryEntry.objects.filter(**query_filter)
 
-        context['form'] = ExternalCommentForm() if not self.request.user.is_authenticated() else StaffCommentBaseForm()
+        context['comment_form'] = ExternalCommentForm() if not self.request.user.is_authenticated() else StaffCommentBaseForm()
         return context
 
 
