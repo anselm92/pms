@@ -124,8 +124,13 @@ class Command(BaseCommand):
 
         group = Group(name='SET')
         group.save()
+        group2 = Group(name='3D')
+        group2.save()
         group_filter = CustomGroupFilter(key='customorder2d__cost_center', group=group,
                                          content_type=ContentType.objects.get(model='costcenter'),
                                          object_id=CostCenter.objects.get(name='SET').id)
+        group_filter2 = CustomGroupFilter(key='customorder3d__isnull', group=group,
+                                         object_id=0, value_boolean=False)
+        group_filter2.save()
         group_filter.save()
         django_user_2.groups.add(group)

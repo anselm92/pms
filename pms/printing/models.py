@@ -142,11 +142,13 @@ class CustomGroupFilter(models.Model):
     group = models.ForeignKey(Group)
     key = models.CharField(max_length=40)
     object_id = models.PositiveIntegerField()
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True, blank=True)
     value = GenericForeignKey('content_type', 'object_id')
+    value_boolean = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.group} -> ({self.key} : {self.value})'
+        return f'{self.group} -> ({self.key} : {self.value or self.value_boolean})'
+
 
 # Delete files not only db object
 @receiver(pre_delete, sender=Order)

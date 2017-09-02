@@ -1,10 +1,13 @@
 import os
 import secrets
+from functools import reduce
+from operator import or_
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 from django.forms import model_to_dict
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound
 from django.template import loader
@@ -239,25 +242,18 @@ class ShowAllOrdersView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(ShowAllOrdersView, self).get_context_data(**kwargs)
         query_filter = self.build_filter_from_permissions()
-        url_list = Order.objects.order_by('-create_date').filter(**query_filter)
-        url_filter = OrdersFilter(self.request.GET, queryset=url_list)
-        context['url_list'] = self._get_url_page(url_filter.qs,
-                                                 self.request.GET.get('page'))
-        context['url_filter'] = url_filter
+        order_list = Order.objects.order_by('-create_date').filter(query_filter).filter(**{'status__gt': 0})
+        order_filter = OrdersFilter(self.request.GET, queryset=order_list)
+        context['order_list'] = self._get_url_page(order_filter.qs,
+                                                   self.request.GET.get('page'))
+        context['order_filter'] = order_filter
         return context
 
-    def build_filter_from_permissions(self):
-        user = self.request.user
-        query_filter = {}
-        group_filters = CustomGroupFilter.objects.filter(group__in=user.groups.all())
+    def build_filter_from_permissions(self, query_filter={}):
+        group_filters = CustomGroupFilter.objects.filter(group__in=self.request.user.groups.all())
         for group_filter in group_filters:
-            query_filter.update({group_filter.key: group_filter.value})
-        query_filter.update({'status__gt': 0})
-        query_filter.update({'scriptorder__isnull': True} if not user.has_perm('printing_2d.view_scriptorder') else {})
-        query_filter.update({'order3d__isnull': True} if not user.has_perm('printing_3d.view_order3d') else {})
-        query_filter.update(
-            {'customorder2d__isnull': True} if not user.has_perm('printing_2d.view_customorder2d') else {})
-        return query_filter
+            query_filter.update({group_filter.key: group_filter.value or group_filter.value_boolean})
+        return reduce(or_, (Q(**d) for d in [dict([i]) for i in query_filter.items()]), Q())
 
 
 class PreviewOrderView(UserPassesTestMixin, SuccessMessageMixin, UpdateView):

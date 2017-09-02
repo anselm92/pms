@@ -22,7 +22,7 @@
                                 class="btn btn-default ">{% bootstrap_icon 'refresh' %}</button>
 
                     </legend>
-                    {% bootstrap_form url_filter.form layout='horizontal' %}
+                    {% bootstrap_form order_filter.form layout='horizontal' %}
 
                 </form>
             </div>
@@ -42,7 +42,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for order in url_list %}
+                    {% for order in order_list %}
 
 
                         {% url 'printing:overview' order.order_hash as link %}
@@ -57,7 +57,7 @@
                         </td>
                         <td style="max-width:130px" scope="row"><a href="{{ link }}">{{ order.title }}</a>
                             <br>
-                            <small>{{ order.order_hash }}</small>
+                            <small>{{ order.order_hash }}{{ order.customorder2d.cost_center }} </small>
                         </td>
                         {% with order.comment_set.all.last as last_comment %}
                             <td style="max-width:200px">{{ order.comment_set.all|length }} comments
@@ -72,7 +72,7 @@
                                 <i>"{{ last_comment.text|truncatechars:30 }}"</i>{% endif %}
                             </small>{% endwith %}
                     </td>
-                        <td>-</td>
+                        <td>{% if order.customorder2d %}Custom order{% elif order.scriptorder %}Script{% endif %}</td>
                         <td style="max-width:100px"> {{ order.create_date }}</td>
                         <td>{{ order.customer }}</td>
                         <td style="min-width:150px">
@@ -90,7 +90,7 @@
                     </tbody>
                 </table>
                 <div style="align-content: center; text-align: center">
-                    {% bootstrap_pagination url_list extra=request.GET.urlencode %}
+                    {% bootstrap_pagination order_list extra=request.GET.urlencode %}
                 </div>
             </div>
 
