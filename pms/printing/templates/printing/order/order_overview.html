@@ -49,11 +49,10 @@
                         {% include 'order/order_overview_3d.html' %}
                     {% endif %}
                 </table>
-
-                {% csrf_token %}
-                {% bootstrap_form form %}
-                <input type="hidden" name="">
-
+                {% if perms.printing.change_order %}
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                {% endif %}
             </div>
             <div class="col-md-2">
 
@@ -77,17 +76,20 @@
                         {% elif order.order3d %}
                             {% url 'printing:printing_3d:order_3d' order.order_hash as copy_url %}
                         {% endif %}
-                        <a class="btn btn-info btn-block pull-right" href="{{ copy_url }}">Duplicate order</a>
-
+                        {% if perms.printing.add_order %}
+                            <a class="btn btn-info btn-block pull-right" href="{{ copy_url }}">Duplicate order</a>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 form-group">
-                        {% buttons %}
-                            <button class="btn btn-block btn-primary">
-                                Save
-                            </button>
-                        {% endbuttons %}
+                        {% if perms.printing.change_order %}
+                            {% buttons %}
+                                <button class="btn btn-block btn-primary">
+                                    Save
+                                </button>
+                            {% endbuttons %}
+                        {% endif %}
                     </div>
                 </div>
 
@@ -107,6 +109,7 @@
                 <div class="col-sm-12"><em>{% trans 'No comments yet' %}</em></div>
             {% endfor %}
         </div>
+
         <div class="col-md-5 col-md-offset-3">
             <h4>New comment</h4>
             <form action="" method="post">

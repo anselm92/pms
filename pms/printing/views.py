@@ -4,11 +4,9 @@ import secrets
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.forms import model_to_dict
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound
-from django.shortcuts import render
 from django.template import loader
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -18,6 +16,7 @@ from pms import settings
 from printing.filters import OrdersFilter
 from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm, CancelOrderForm
 from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, process_stl
+from printing.mixins import PermissionPostGetRequiredMixin
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry, \
     ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED
 from printing.utils import CommentEmail
@@ -39,13 +38,14 @@ class SubscriptionView:
             mail.send()
 
 
-class ShowOrderDetailView(DetailView, UpdateView):
+class ShowOrderDetailView(PermissionPostGetRequiredMixin, DetailView, UpdateView):
     template_name = "printing/order/order_overview.html"
     model = Order
     context_object_name = 'order'
     slug_url_kwarg = "order_hash"
     slug_field = "order_hash"
     fields = ['status', 'assignee']
+    permission_post_required = 'printing.order_change'
 
     def get_queryset(self):
         qs = super(ShowOrderDetailView, self).get_queryset()
@@ -56,6 +56,7 @@ class ShowOrderDetailView(DetailView, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(ShowOrderDetailView, self).get_context_data(**kwargs)
+        staff = self.request.user.has_perm('printing.add_staffcomment')
 
         query_filter = {'order': self.get_object()}
         query_filter.update({'public': True} if not self.request.user.is_authenticated() else {})
@@ -63,9 +64,8 @@ class ShowOrderDetailView(DetailView, UpdateView):
 
         query_filter = {'order': self.get_object()}
         context['history'] = OrderHistoryEntry.objects.filter(**query_filter)
-
         context[
-            'comment_form'] = ExternalCommentForm() if not self.request.user.is_authenticated() else StaffCommentBaseForm()
+            'comment_form'] = ExternalCommentForm() if not staff else StaffCommentBaseForm()
         return context
 
 
@@ -100,7 +100,8 @@ class ShowOrderOverviewView(View):
 
     @staticmethod
     def post(request, *args, **kwargs):
-        view = CreateStaffCommentView.as_view() if request.user.is_authenticated() else CreateExternalCommentView.as_view()
+        staff = request.user.has_perm('printing.add_staffcomment')
+        view = CreateStaffCommentView.as_view() if staff else CreateExternalCommentView.as_view()
         return view(request, *args, **kwargs)
 
 
@@ -187,9 +188,10 @@ class CreateExternalCommentView(FormView, SubscriptionView):
         return reverse('printing:overview', kwargs={'order_hash': self.kwargs['order_hash']})
 
 
-class CreateStaffCommentView(FormView, SubscriptionView):
+class CreateStaffCommentView(FormView, PermissionRequiredMixin, SubscriptionView):
     template_name = "printing/order/order_overview.html"
     form_class = StaffCommentBaseForm
+    permission_required = "printing.add_staffcomment"
 
     def form_valid(self, form):
         comment = form.save(commit=False)
