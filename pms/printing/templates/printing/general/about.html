@@ -1,5 +1,6 @@
 {% extends "pms/base_generic.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block title %}PMS Printing Management System{% endblock %}
 
@@ -11,10 +12,13 @@
 
             <div class="row">
                 <div class="col-sm-12 text-center">
-                    <h3>Fachschaft MPI - Technische Universität München</h3>
                     <img src="https://mpi.fs.tum.de/wordpress/wp-content/uploads/2015/12/fslogo.svg" width="100px">
 
+                    <h3>Fachschaft MPI - Technische Universität München</h3>
+                    <img src="{% static 'images/logo_thumbnail.png' %}" width="50px">
                     <h4>PMS - Printing Management System</h4>
+
+
                 </div>
             </div>
             <div class="row">
@@ -38,14 +42,14 @@
             </div>
             <div class="row">
                 <div class=" col-sm-12 text-center">
-                                <h4>Sourcecode: </h4>
+                    <h4>Sourcecode: </h4>
 
                     <a href="https://git.fs.tum.de/printing/pms/tree/develop">https://git.fs.tum.de/printing/pms/tree/develop</a>
                     <h4>Contributors:</h4>
 
-                        <p>Anselm Binninger</p>
-                        <p>Thomas Maier</p>
-                        <p>Ralph Oliver Schaumannn</p>
+                    <p>Anselm Binninger</p>
+                    <p>Thomas Maier</p>
+                    <p>Ralph Oliver Schaumannn</p>
                     </ul>
 
                 </div>

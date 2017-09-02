@@ -11,10 +11,14 @@
     </li>
     <li>
         {% url "printing:printing_2d:home" as index_2d %}
-        <a href="{{ index_2d }}"><i class="fa fa-fw fa-bar-chart-o"></i> 2D Printing</a>
+        <a href="{{ index_2d }}"><i class="fa fa-fw fa-print"></i> 2D Printing</a>
     </li>
     <li>
         {% url "printing:printing_3d:order_3d" "" as index_3d %}
-        <a href="{{ index_3d }}"><i class="fa fa-fw fa-bar-chart-o"></i> 3D Printing</a>
+        <a href="{{ index_3d }}"><i class="fa fa-fw fa-cubes"></i> 3D Printing</a>
+    </li>
+    <li>
+        {% url "printing:about" as about %}
+        <a href="{{ about }}"><i class="fa fa-fw fa-info-circle"></i> About</a>
     </li>
 </ul>
