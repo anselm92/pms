@@ -21,8 +21,10 @@ from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffComme
 from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, process_stl
 from printing.mixins import PermissionPostGetRequiredMixin
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry, \
-    ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED, CostCenter, CustomGroupFilter
+    ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED, CustomGroupFilter, OrderHistoryStaffEntry, \
+    OrderHistoryExternalEntry
 from printing.utils import CommentEmail, OrderReceivedEmail
+from printing.templatetags.templatefilters import order_status
 
 
 class HomeView(TemplateView):
@@ -63,13 +65,36 @@ class ShowOrderDetailView(PermissionPostGetRequiredMixin, DetailView, UpdateView
 
         query_filter = {'order': self.get_object()}
         query_filter.update({'public': True} if not self.request.user.is_authenticated() else {})
-        context['comments'] = Comment.objects.filter(**query_filter)
+        context['comments'] = Comment.objects.filter(**query_filter).order_by('create_date')
+
+        context['comment_form'] = ExternalCommentForm() if not staff else StaffCommentBaseForm()
 
         query_filter = {'order': self.get_object()}
-        context['history'] = OrderHistoryEntry.objects.filter(**query_filter)
-        context[
-            'comment_form'] = ExternalCommentForm() if not staff else StaffCommentBaseForm()
+        context['history'] = OrderHistoryEntry.objects.filter(**query_filter).order_by('create_date')
         return context
+
+    def form_valid(self, form):
+        order = form.save(commit=False)
+
+        old_order = Order.objects.get(pk=self.object.id)
+        if old_order.status != order.status:
+            user = self.request.user
+            status_name = order_status(order.status)
+            history_text = f'Status changed to {status_name} by {user.first_name} {user.last_name}'
+            history_entry = OrderHistoryStaffEntry(order=order, description=history_text, user=user)
+            history_entry.save()
+
+        if old_order.assignee != order.assignee:
+            user = self.request.user
+            if order.assignee:
+                history_text = f'Order assigned to {order.assignee.first_name} {order.assignee.last_name} ' \
+                               f'by {user.first_name} {user.last_name}'
+            else:
+                history_text = f'Order unassigned by {user.first_name} {user.last_name}'
+            history_entry = OrderHistoryStaffEntry(order=order, description=history_text, user=user)
+            history_entry.save()
+
+        return super(ShowOrderDetailView, self).form_valid(form)
 
 
 class CancelOrderView(UpdateView):
@@ -92,6 +117,13 @@ class CancelOrderView(UpdateView):
         order = form.save(commit=False)
         order.status = ORDER_STATUS_DENIED
         order.save()
+
+        user = self.request.user
+        status_name = order_status(order.status)
+        history_text = f'Status changed to {status_name} by {user.first_name} {user.last_name}'
+        history_entry = OrderHistoryStaffEntry(order=order, description=history_text, user=user)
+        history_entry.save()
+
         return super(CancelOrderView, self).form_valid(form)
 
 
@@ -137,19 +169,18 @@ class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, Subs
         else:
             order.customer = ExternalCustomer.objects.get(order_token=token)
         order.save()
-        if self.is_pdf(order.file.path):
+        if CreateOrderView.has_extension(order.file.path, 'pdf'):
             convert_pdf_to_png(order.file.path)
-        if self.is_stl(order.file.path):
+        if CreateOrderView.has_extension(order.file.path, 'stl'):
             process_stl(order.file.path, order)
 
         self.subscribe(order, order.customer)
+
         return super(CreateOrderView, self).form_valid(form)
 
-    def is_pdf(self, path):
-        return os.path.splitext(path)[1] == '.pdf'
-
-    def is_stl(self, path):
-        return os.path.splitext(path)[1] == '.stl'
+    @staticmethod
+    def has_extension(path, extension):
+        return os.path.splitext(path)[1] == f'.{extension}'
 
 
 class CreateExternalCustomerView(FormView):
@@ -275,6 +306,13 @@ class PreviewOrderView(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
         order.status = ORDER_STATUS_OPEN
         order.save()
         OrderReceivedEmail(order, order.subscription_set.first()).send()
+
+        customer = order.customer
+        status_name = order_status(order.status)
+        history_text = f'Order created with status {status_name} by {customer.first_name} {customer.last_name}'
+        history_entry = OrderHistoryExternalEntry(order=order, description=history_text, customer=customer)
+        history_entry.save()
+
         return super(PreviewOrderView, self).form_valid(form)
 
     def get_success_url(self):

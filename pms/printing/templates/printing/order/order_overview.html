@@ -24,7 +24,7 @@
             <div class="col-md-3 hidden-xs"><img
                     src="/media/{{ order.file_thumbnail_path }}"
                     alt="..."
-                    class="img-responsive"/></div>
+                    class="img-responsive img-thumbnail"/></div>
             <div class="col-md-7">
 
 
@@ -130,11 +130,13 @@
             <h3>History</h3>
         </div>
         <div class="col-md-12">
+            <ul class="list-group">
             {% for history_entry in history %}
-                {{ history_entry }}
+                <li class="list-group-item">{{ history_entry.create_date }}: <em>{{ history_entry.description }}</em></li>
             {% empty %}
                 <div class="col-sm-12"><em>{% trans 'No history yet' %}</em></div>
             {% endfor %}
+            </ul>
         </div>
     </div>
 {% endblock %}
