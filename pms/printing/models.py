@@ -4,6 +4,7 @@ import os
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.contrib.auth.models import User, Group
 from model_utils.managers import InheritanceManager
@@ -61,7 +62,8 @@ class Order(models.Model):
     assignee = models.ForeignKey(User, blank=True, null=True)
     file = models.FileField(default=None, null=True,
                             upload_to=order_files_upload_handler,
-                            storage=fs)
+                            storage=fs,
+                            validators=[FileExtensionValidator(allowed_extensions=['pdf', 'stl'])])
     file_name = models.CharField(max_length=40, blank=True)
     file_thumbnail_path = models.CharField(max_length=256, blank=True, null=True)
     objects = InheritanceManager()
