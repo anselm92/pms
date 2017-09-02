@@ -290,3 +290,7 @@ class ServeOrderFiles(View):
     def raise_404(self, request):
         t = loader.get_template('errors/404.html')
         return HttpResponseNotFound(t.render({}))
+
+
+class AboutView(TemplateView):
+    template_name = 'printing/general/about.html'

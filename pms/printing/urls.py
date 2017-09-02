@@ -3,12 +3,13 @@ from django.contrib.auth import views as auth_views
 
 from printing.views import HomeView, ShowOrderOverviewView, CreateExternalCustomerView, \
     UnsubscribeFromOrder, UnsubscribeFromOrderSuccessful, ShowAllOrdersView, ServeOrderFiles, PreviewOrderView, \
-    ShowOrderDetailView, CancelOrderView
+    ShowOrderDetailView, CancelOrderView, AboutView
 from printing_2d import urls as urls_2d_printing
 from printing_3d import urls as urls_3d_printing
 
 urlpatterns = [
     url(r'^$', HomeView.as_view(), name="home"),
+    url(r'^about/$', AboutView.as_view(), name="about"),
     url(r'^accounts/login/$', auth_views.LoginView.as_view(template_name='printing/general/login.html'), name='login'),
     url(r'^accounts/logout/$', auth_views.LogoutView.as_view(template_name='printing/general/logout.html'),
         name='logout'),
