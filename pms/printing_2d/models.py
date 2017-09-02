@@ -13,6 +13,11 @@ class CoverSheetColor(models.Model):
 class ScriptOrder(Order):
     cover_sheet_color = models.ForeignKey(CoverSheetColor)
 
+    class Meta:
+        permissions = (
+            ('view_scriptorder', 'Can view script order'),
+        )
+
 
 class PostProcessing2d(models.Model):
     name = models.CharField(max_length=99)
@@ -41,3 +46,8 @@ class CustomOrder2d(Order):
     cost_center = models.ForeignKey(CostCenter)
     post_processing = models.ManyToManyField(PostProcessing2d)
     material = models.ForeignKey(Material2d)
+
+    class Meta:
+        permissions = (
+            ('view_customorder2d', 'Can view'),
+        )

@@ -45,6 +45,7 @@ class Command(BaseCommand):
                                          mail_address=django_user_2.email, user=django_user_2)
         staff_customer_2.save()
 
+
         # Printing 2D
         self.stdout.write('CoverSheetColor')
         cover_sheet_color_1 = CoverSheetColor(name='rot', color_code='FF0000')
@@ -120,3 +121,11 @@ class Command(BaseCommand):
             Permission.objects.create(content_type=content_type,
                                       codename="dashboard_show",
                                       name="Can view %s" % content_type.model)
+
+        group = Group(name='SET')
+        group.save()
+        group_filter = CustomGroupFilter(key='customorder2d__cost_center', group=group,
+                                         content_type=ContentType.objects.get(model='costcenter'),
+                                         object_id=CostCenter.objects.get(name='SET').id)
+        group_filter.save()
+        django_user_2.groups.add(group)

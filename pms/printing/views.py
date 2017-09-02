@@ -18,7 +18,7 @@ from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffComme
 from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, process_stl
 from printing.mixins import PermissionPostGetRequiredMixin
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry, \
-    ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED
+    ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED, CostCenter, CustomGroupFilter
 from printing.utils import CommentEmail
 
 
@@ -238,13 +238,26 @@ class ShowAllOrdersView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ShowAllOrdersView, self).get_context_data(**kwargs)
-        url_list = Order.objects.order_by('-create_date').filter(status__gt=0)
-
+        query_filter = self.build_filter_from_permissions()
+        url_list = Order.objects.order_by('-create_date').filter(**query_filter)
         url_filter = OrdersFilter(self.request.GET, queryset=url_list)
         context['url_list'] = self._get_url_page(url_filter.qs,
                                                  self.request.GET.get('page'))
         context['url_filter'] = url_filter
         return context
+
+    def build_filter_from_permissions(self):
+        user = self.request.user
+        query_filter = {}
+        group_filters = CustomGroupFilter.objects.filter(group__in=user.groups.all())
+        for group_filter in group_filters:
+            query_filter.update({group_filter.key: group_filter.value})
+        query_filter.update({'status__gt': 0})
+        query_filter.update({'scriptorder__isnull': True} if not user.has_perm('printing_2d.view_scriptorder') else {})
+        query_filter.update({'order3d__isnull': True} if not user.has_perm('printing_3d.view_order3d') else {})
+        query_filter.update(
+            {'customorder2d__isnull': True} if not user.has_perm('printing_2d.view_customorder2d') else {})
+        return query_filter
 
 
 class PreviewOrderView(UserPassesTestMixin, SuccessMessageMixin, UpdateView):

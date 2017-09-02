@@ -11,3 +11,8 @@ class Order3d(Order):
     width = models.FloatField(default=0, blank=True, null=True)
     height = models.FloatField(default=0, blank=True, null=True)
     depth = models.FloatField(default=0, blank=True, null=True)
+
+    class Meta:
+        permissions = (
+            ('view_order3d', 'Can view'),
+        )

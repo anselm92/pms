@@ -1,8 +1,11 @@
 import secrets
 
 import os
+
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from model_utils.managers import InheritanceManager
 
 from printing.handlers import order_files_upload_handler, fs, _delete_order
@@ -73,6 +76,11 @@ class Order(models.Model):
         self.file_thumbnail_path = self.file.name.replace(os.path.splitext(self.file.name)[1], '.png')
         models.Model.save(self, force_insert, force_update, using, update_fields)
 
+    class Meta:
+        permissions = (
+            ('can_view', 'Can view'),
+        )
+
 
 class Material(models.Model):
     name = models.CharField(max_length=99)
@@ -129,6 +137,16 @@ class OrderHistoryStaffEntry(OrderHistoryEntry):
 class OrderHistoryExternalEntry(OrderHistoryEntry):
     customer = models.ForeignKey(Customer)
 
+
+class CustomGroupFilter(models.Model):
+    group = models.ForeignKey(Group)
+    key = models.CharField(max_length=40)
+    object_id = models.PositiveIntegerField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    value = GenericForeignKey('content_type', 'object_id')
+
+    def __str__(self):
+        return f'{self.group} -> ({self.key} : {self.value})'
 
 # Delete files not only db object
 @receiver(pre_delete, sender=Order)
