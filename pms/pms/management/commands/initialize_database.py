@@ -74,24 +74,24 @@ class Command(BaseCommand):
         post_processing_3 = PostProcessing2d(name='Lochen')
         post_processing_3.save()
 
-        self.stdout.write('ScriptOrder')
-        script_order_1 = ScriptOrder(title='Analysis', amount=250, customer=staff_customer_1,
-                                     cover_sheet_color=cover_sheet_color_1)
-        script_order_1.save()
-        script_order_2 = ScriptOrder(title='Diskrete Strukturen', amount=500, customer=staff_customer_1,
-                                     cover_sheet_color=cover_sheet_color_2)
-        script_order_2.save()
-        script_order_3 = ScriptOrder(title='Lineare Algebra', amount=320, customer=staff_customer_2,
-                                     cover_sheet_color=cover_sheet_color_3)
-        script_order_3.save()
+        #self.stdout.write('ScriptOrder')
+        #script_order_1 = ScriptOrder(title='Analysis', amount=250, customer=staff_customer_1,
+        #                             cover_sheet_color=cover_sheet_color_1)
+        #script_order_1.save()
+        #script_order_2 = ScriptOrder(title='Diskrete Strukturen', amount=500, customer=staff_customer_1,
+        #                             cover_sheet_color=cover_sheet_color_2)
+        #script_order_2.save()
+        #script_order_3 = ScriptOrder(title='Lineare Algebra', amount=320, customer=staff_customer_2,
+        #                             cover_sheet_color=cover_sheet_color_3)
+        #script_order_3.save()
 
-        self.stdout.write('CustomOrder2d')
-        custom_order_1 = CustomOrder2d(title='Bissle drugge', amount=1, customer=external_customer_1,
-                                       sided_printing=SIDED_PRINTING_SIMPLEX, chromatic_printing=False,
-                                       cost_center=cost_center_1, material=material_2d_1)
-        custom_order_1.save()
-        custom_order_1.post_processing.add(post_processing_1)
-        custom_order_1.post_processing.add(post_processing_2)
+        #self.stdout.write('CustomOrder2d')
+        #custom_order_1 = CustomOrder2d(title='Bissle drugge', amount=1, customer=external_customer_1,
+        #                               sided_printing=SIDED_PRINTING_SIMPLEX, chromatic_printing=False,
+        #                               cost_center=cost_center_1, material=material_2d_1)
+        #custom_order_1.save()
+        #custom_order_1.post_processing.add(post_processing_1)
+        #custom_order_1.post_processing.add(post_processing_2)
 
         # Printing 3D
         self.stdout.write('Material3d')
@@ -102,13 +102,13 @@ class Command(BaseCommand):
                                    color_code='FF7F50', cost_per_unit=0.13)
         material_3d_2.save()
 
-        self.stdout.write('Order3d')
-        order_3d_1 = Order3d(title='Unicorn', amount=3, customer=external_customer_1, material=material_3d_2, width=25,
-                             height=25, depth=25)
-        order_3d_1.save()
-        order_3d_2 = Order3d(title='Hippo', amount=1, customer=external_customer_1, material=material_3d_1, width=15,
-                             height=15, depth=15)
-        order_3d_2.save()
+        #self.stdout.write('Order3d')
+        #order_3d_1 = Order3d(title='Unicorn', amount=3, customer=external_customer_1, material=material_3d_2, width=25,
+        #                     height=25, depth=25)
+        #order_3d_1.save()
+        #order_3d_2 = Order3d(title='Hippo', amount=1, customer=external_customer_1, material=material_3d_1, width=15,
+        #                     height=15, depth=15)
+        #order_3d_2.save()
 
         self.stdout.write('Permissions')
         # TODO: add permissions for all views
