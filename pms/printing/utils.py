@@ -29,3 +29,11 @@ class CommentEmail(Email):
         self.subscription = subscription
         self.subject = f'New comment for order {order}'
         self.template_name = 'printing/mail/new_comment.html'
+
+
+class OrderReceivedEmail(Email):
+    def __init__(self, order, subscription):
+        self.order = order
+        self.subscription = subscription
+        self.subject = f'Thanks for your order {order}'
+        self.template_name = 'printing/mail/order_received.html'

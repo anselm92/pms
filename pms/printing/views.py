@@ -22,7 +22,7 @@ from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, process_stl
 from printing.mixins import PermissionPostGetRequiredMixin
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry, \
     ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED, CostCenter, CustomGroupFilter
-from printing.utils import CommentEmail
+from printing.utils import CommentEmail, OrderReceivedEmail
 
 
 class HomeView(TemplateView):
@@ -274,6 +274,7 @@ class PreviewOrderView(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
         order: Order = form.save(commit=False)
         order.status = ORDER_STATUS_OPEN
         order.save()
+        OrderReceivedEmail(order, order.subscription_set.first()).send()
         return super(PreviewOrderView, self).form_valid(form)
 
     def get_success_url(self):
