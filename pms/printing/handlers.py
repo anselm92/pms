@@ -26,7 +26,7 @@ def convert_pdf_to_png(pdf):
     try:
         from wand.color import Color
         from wand.image import Image
-        with Image(filename=pdf + '[0]', resolution=300) as i:
+        with Image(filename=pdf + '[0]', resolution=70) as i:
             i.format = 'png'
             i.background_color = Color('white')  # Set white background.
             i.alpha_channel = 'remove'
