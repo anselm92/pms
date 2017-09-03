@@ -24,7 +24,7 @@ from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Sub
     ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED, CustomGroupFilter, OrderHistoryStaffEntry, \
     OrderHistoryExternalEntry
 from printing.utils import CommentEmail, OrderReceivedEmail
-from printing.templatetags.templatefilters import order_status
+from printing.templatetags.printing_filters import order_status
 
 
 class HomeView(TemplateView):

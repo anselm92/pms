@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load bootstrap3 %}
-{% load templatefilters %}
+{% load printing_filters %}
 
 {% block head %}
     <link href="{% static "css/theme.css" %}" rel="stylesheet">
@@ -13,51 +13,46 @@
 
 {% block content %}
     <div class="row">
-    <div class="col-md-2 hidden-xs"><img
-            src="/media/{{ order.file_thumbnail_path }}"
-            alt="..."
-            class="img-responsive"/></div>
-    <div class="col-md-8">
-        <table class="table">
-            <tr>
-                <td>{% trans 'Ordernr.' %}:</td>
-                <td>{{ order.id }}</td>
-            </tr>
-            <tr>
-                <td>{% trans 'Orderdate' %}:</td>
-                <td>{{ order.create_date }}</td>
-            </tr>
-            <tr>
-                <td>{% trans 'State' %}:</td>
-                <td>{{ order.status|order_status }}</td>
-            </tr>
-            {% if order.scriptorder %}
-                {% include 'order/order_overview_script.html' %}
-            {% elif order.customorder2d %}
-                {% include 'order/order_overview_custom.html' %}
-            {% elif order.order3d %}
-                {% include 'order/order_overview_3d.html' %}
-
-            {% endif %}
-        </table>
-    </div>
-    <div class="row">
-        <div class="col-sm-12">
-
-            <form action="" enctype="multipart/form-data" class="col-sm-10 " method="post">
-                {% csrf_token %}
-                {% bootstrap_form form %}
-                {% buttons %}
-                    <button class="btn btn-warning" onclick="history.back()">Back</button>
-                    <button type="submit" style="float: right" class="btn btn-primary ">
-
-                        {% bootstrap_icon "send" %} Submit
-                    </button>
-
-
-                {% endbuttons %}
-            </form>
+        <div class="col-md-2 hidden-xs"><img
+                src="/media/{{ order.file_thumbnail_path }}"
+                alt="..."
+                class="img-responsive"/></div>
+        <div class="col-md-8">
+            <table class="table">
+                <tr>
+                    <td>{% trans 'Ordernr.' %}:</td>
+                    <td>{{ order.id }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans 'Orderdate' %}:</td>
+                    <td>{{ order.create_date }}</td>
+                </tr>
+                <tr>
+                    <td>{% trans 'State' %}:</td>
+                    <td>{{ order.status|order_status }}</td>
+                </tr>
+                {% if order.scriptorder %}
+                    {% include 'order/order_overview_script.html' %}
+                {% elif order.customorder2d %}
+                    {% include 'order/order_overview_custom.html' %}
+                {% elif order.order3d %}
+                    {% include 'order/order_overview_3d.html' %}
+                {% endif %}
+            </table>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <form action="" enctype="multipart/form-data" class="col-sm-10 " method="post">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% buttons %}
+                        <button class="btn btn-warning" onclick="history.back()">Back</button>
+                        <button type="submit" style="float: right" class="btn btn-primary ">
+                            {% bootstrap_icon "send" %} Submit
+                        </button>
+                    {% endbuttons %}
+                </form>
+            </div>
         </div>
     </div>
-
 {% endblock %}

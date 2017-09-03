@@ -1,57 +1,27 @@
 {% load i18n %}
+{% load printing_2d_filters %}
 
-<div class="panel-body">
-    <div class="col-sm-12">
-        <div class="col-sm-9">
-            <div class="row">
-
-                <div class="col-sm-8 col-xs-8">
-                    <h5 class="nomargin">{% trans 'Sided printing' %}</h5>
-                </div>
-                <div class="col-sm-4 hidden-xs">
-                    {{ order.customorder2d.sided_printing }}
-                </div>
-            </div>
-            <div class="row">
-
-                <div class="col-sm-8 col-xs-8">
-                    <h5 class="nomargin">{% trans 'Chromatic printing' %}</h5>
-                </div>
-                <div class="col-sm-4 hidden-xs">
-                    {{ order.customorder2d.chromatic_printing }}
-                </div>
-            </div>
-            <div class="row">
-
-                <div class="col-sm-8 col-xs-8">
-                    <h5 class="nomargin">{% trans 'Cost center' %}</h5>
-                </div>
-                <div class="col-sm-4 hidden-xs">
-                    {{ order.customorder2d.cost_center }}
-                </div>
-            </div>
-            <div class="row">
-
-                <div class="col-sm-8 col-xs-8">
-                    <h5 class="nomargin">{% trans 'Post processing' %}</h5>
-                </div>
-                <div class="col-sm-4 hidden-xs">
-                    {% for item in order.customorder2d.post_processing.all %}
-                        {{ item }}<br>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="row">
-
-                <div class="col-sm-8 col-xs-8">
-                    <h5 class="nomargin">{% trans 'Material' %}</h5>
-                </div>
-                <div class="col-sm-4 hidden-xs">
-                    {{ order.customorder2d.material }}
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-</div>
+<tr>
+    <td>{% trans 'Sided printing' %}</td>
+    <td>{{ order.customorder2d.sided_printing|sided_printing }}</td>
+</tr>
+<tr>
+    <td>{% trans 'Chromatic printing' %}</td>
+    <td>{{ order.customorder2d.chromatic_printing }}</td>
+</tr>
+<tr>
+    <td>{% trans 'Cost center' %}</td>
+    <td>{{ order.customorder2d.cost_center }}</td>
+</tr>
+<tr>
+    <td>{% trans 'Post processing' %}</td>
+    <td>
+        {% for item in order.customorder2d.post_processing.all %}
+            {{ item }}<br>
+        {% endfor %}
+    </td>
+</tr>
+<tr>
+    <td>{% trans 'Material' %}</td>
+    <td>{{ order.customorder2d.material }}</td>
+</tr>
