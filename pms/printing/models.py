@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.contrib.auth.models import User, Group
+from django_model_changes import ChangesMixin
 from model_utils.managers import InheritanceManager
 
 from printing.handlers import order_files_upload_handler, fs, _delete_order
@@ -99,6 +100,9 @@ class Comment(models.Model):
     text = models.TextField()
     public = models.BooleanField(default=True)
 
+    class Meta:
+        ordering = ['create_date']
+
     def __str__(self):
         return self.text
 
@@ -127,6 +131,9 @@ class OrderHistoryEntry(models.Model):
     order = models.ForeignKey(Order)
     description = models.TextField()
     create_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['create_date']
 
     def __str__(self):
         return self.description

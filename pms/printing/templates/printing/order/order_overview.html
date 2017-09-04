@@ -131,7 +131,7 @@
         </div>
         <div class="col-md-12">
             <ul class="list-group">
-            {% for history_entry in history %}
+            {% for history_entry in order.orderhistoryentry_set.all %}
                 <li class="list-group-item">{{ history_entry.create_date }}: <em>{{ history_entry.description }}</em></li>
             {% empty %}
                 <div class="col-sm-12"><em>{% trans 'No history yet' %}</em></div>

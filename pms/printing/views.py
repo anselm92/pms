@@ -21,14 +21,26 @@ from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffComme
 from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, process_stl
 from printing.mixins import PermissionPostGetRequiredMixin
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry, \
-    ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED, CustomGroupFilter, OrderHistoryStaffEntry, \
-    OrderHistoryExternalEntry
-from printing.utils import CommentEmail, OrderReceivedEmail
+    ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED, CustomGroupFilter
 from printing.templatetags.printing_filters import order_status
+from printing.utils import CommentEmail, OrderReceivedEmail
 
 
 class HomeView(TemplateView):
     template_name = "printing/general/home.html"
+
+
+class HistoryUpdateView(UpdateView):
+    def form_valid(self, form):
+        changes = {field: (getattr(self.get_object(), field), form.cleaned_data[field]) for field in form.changed_data}
+        [OrderHistoryEntry(order=self.get_object(),
+                           description=f'{field} changed from {self.format(field,change[0])} to '
+                                       f'{self.format(field,change[1])} by {self.request.user}').save()
+         for field, change in changes.items()]
+        return super(HistoryUpdateView, self).form_valid(form)
+
+    def format(self, field, value):
+        return f'{order_status(value)}' if field == 'status' else f'{value}'
 
 
 class SubscriptionView:
@@ -43,7 +55,7 @@ class SubscriptionView:
             mail.send()
 
 
-class ShowOrderDetailView(PermissionPostGetRequiredMixin, DetailView, UpdateView):
+class ShowOrderDetailView(PermissionPostGetRequiredMixin, DetailView, HistoryUpdateView):
     template_name = "printing/order/order_overview.html"
     model = Order
     context_object_name = 'order'
@@ -66,44 +78,20 @@ class ShowOrderDetailView(PermissionPostGetRequiredMixin, DetailView, UpdateView
         query_filter = {'order': self.get_object()}
         query_filter.update({'public': True} if not self.request.user.is_authenticated() else {})
         context['comments'] = Comment.objects.filter(**query_filter).order_by('create_date')
-
         context['comment_form'] = ExternalCommentForm() if not staff else StaffCommentBaseForm()
-
-        query_filter = {'order': self.get_object()}
-        context['history'] = OrderHistoryEntry.objects.filter(**query_filter).order_by('create_date')
         return context
 
-    def form_valid(self, form):
-        order = form.save(commit=False)
 
-        old_order = Order.objects.get(pk=self.object.id)
-        if old_order.status != order.status:
-            user = self.request.user
-            status_name = order_status(order.status)
-            history_text = f'Status changed to {status_name} by {user.first_name} {user.last_name}'
-            history_entry = OrderHistoryStaffEntry(order=order, description=history_text, user=user)
-            history_entry.save()
-
-        if old_order.assignee != order.assignee:
-            user = self.request.user
-            if order.assignee:
-                history_text = f'Order assigned to {order.assignee.first_name} {order.assignee.last_name} ' \
-                               f'by {user.first_name} {user.last_name}'
-            else:
-                history_text = f'Order unassigned by {user.first_name} {user.last_name}'
-            history_entry = OrderHistoryStaffEntry(order=order, description=history_text, user=user)
-            history_entry.save()
-
-        return super(ShowOrderDetailView, self).form_valid(form)
-
-
-class CancelOrderView(UpdateView):
+class CancelOrderView(HistoryUpdateView):
     template_name = "printing/order/cancel_order.html"
     model = Order
     context_object_name = 'order'
     slug_url_kwarg = "order_hash"
     slug_field = "order_hash"
     form_class = CancelOrderForm
+
+    def get_initial(self):
+        return {'status': ORDER_STATUS_DENIED}
 
     def get_success_url(self):
         return reverse('printing:overview', kwargs={'order_hash': self.kwargs['order_hash']})
@@ -115,15 +103,8 @@ class CancelOrderView(UpdateView):
 
     def form_valid(self, form):
         order = form.save(commit=False)
+        form.changed_data.append('status')
         order.status = ORDER_STATUS_DENIED
-        order.save()
-
-        user = self.request.user
-        status_name = order_status(order.status)
-        history_text = f'Status changed to {status_name} by {user.first_name} {user.last_name}'
-        history_entry = OrderHistoryStaffEntry(order=order, description=history_text, user=user)
-        history_entry.save()
-
         return super(CancelOrderView, self).form_valid(form)
 
 
@@ -173,9 +154,7 @@ class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, Subs
             convert_pdf_to_png(order.file.path)
         if CreateOrderView.has_extension(order.file.path, 'stl'):
             process_stl(order.file.path, order)
-
         self.subscribe(order, order.customer)
-
         return super(CreateOrderView, self).form_valid(form)
 
     @staticmethod
@@ -297,7 +276,6 @@ class PreviewOrderView(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
 
     def test_func(self):
         token = self.kwargs['order_hash']
-        # customers = ExternalCustomer.objects.filter(order_token=token)
         return True if ((len(
             token) > 0 and self.get_object().status == ORDER_STATUS_PENDING)) else False
 
@@ -306,13 +284,6 @@ class PreviewOrderView(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
         order.status = ORDER_STATUS_OPEN
         order.save()
         OrderReceivedEmail(order, order.subscription_set.first()).send()
-
-        customer = order.customer
-        status_name = order_status(order.status)
-        history_text = f'Order created with status {status_name} by {customer.first_name} {customer.last_name}'
-        history_entry = OrderHistoryExternalEntry(order=order, description=history_text, customer=customer)
-        history_entry.save()
-
         return super(PreviewOrderView, self).form_valid(form)
 
     def get_success_url(self):
