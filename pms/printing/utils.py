@@ -1,7 +1,17 @@
+from celery.task import task
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from pms.settings import SITE
+
+
+@task(name="send_mail")
+def send_async(subject, content, address):
+    email = EmailMultiAlternatives('Subject', subject)
+    email.subject = subject
+    email.attach_alternative(content, "text/html")
+    email.to = [address]
+    return email.send()
 
 
 class Email(object):
@@ -13,11 +23,7 @@ class Email(object):
     def send(self):
         c = {'order': self.order, 'subscription': self.subscription, 'site': SITE}
         html_content = render_to_string(self.template_name, c)
-        email = EmailMultiAlternatives('Subject', self.subject)
-        email.subject = self.subject
-        email.attach_alternative(html_content, "text/html")
-        email.to = [self.subscription.customer.mail_address]
-        email.send()
+        send_async.delay(self.subject, html_content, self.subscription.customer.mail_address)
 
     def get_object(self):
         return self.order

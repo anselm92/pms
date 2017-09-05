@@ -1,6 +1,8 @@
-import os
-
+from pms.settings.celery import app as cel_app
 from pms.settings.local_settings import *
+
+# Note: do not remove this, it makes sure the import is not deleted and thus celery starts
+cel_app
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = '%s/../' % os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -93,6 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'de-DE'
 
 from django.utils.translation import ugettext_lazy as _
+
 LANGUAGES = [
     ('en', _('English')),
     ('de', _('German')),
@@ -122,7 +125,6 @@ RECAPTCHA_PRIVATE_KEY = '6Ld9Xi4UAAAAAPFjPuVaCrvde9kR8Zr6ER0pCQCd'
 NOCAPTCHA = True
 RECAPTCHA_TESTING = True
 
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Host for sending e-mail.
 EMAIL_HOST = 'mail.bwk-technik.de'
@@ -133,7 +135,7 @@ DEFAULT_FROM_EMAIL = 'PMS <test@bwk-technik.de>'
 
 # Optional SMTP authentication information for EMAIL_HOST.
 EMAIL_HOST_USER = 'testbwk@bwk-technik.de'
-EMAIL_HOST_PASSWORD = '3jfk6dCCGT75fHVFdd9987' #remove last letter
+EMAIL_HOST_PASSWORD = '3jfk6dCCGT75fHVFdd9987'  # remove last letter
 EMAIL_USE_TLS = True
 
 SITE = "localhost:8000"

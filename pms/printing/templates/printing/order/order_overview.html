@@ -4,9 +4,7 @@
 {% load bootstrap3 %}
 {% load printing_filters %}
 
-{% block head %}
-    <link href="{% static "css/theme.css" %}" rel="stylesheet">
-{% endblock head %}
+
 {% block title %}Order - {{ order.title }}{% endblock %}
 
 {% block page_title %}Order - {{ order.title }}
@@ -21,12 +19,14 @@
     <div class="row">
         {% url 'printing:update_order' order.order_hash as update_url %}
         <form action="{{ update_url }}" method="post">
-            <div class="col-md-3 hidden-xs"><img
+            <div class="col-md-3 hidden-xs text-center"><img
                     src="/media/{{ order.file_thumbnail_path }}"
-                    alt="..."
-                    class="img-responsive img-thumbnail"/></div>
+                    alt=""
+                    style="background: url('/static/images/loader.gif') no-repeat; background-position: center; min-height: 100px"
+                    class="img-responsive slow-images center-block"/>
+                <small id="img-text">Generating preview...</small>
+            </div>
             <div class="col-md-7">
-
 
                 <table class="table">
                     <tr>
@@ -59,7 +59,8 @@
                 <div class="row">
                     <div class="col-md-12 form-group">
                         {% url 'printing:cancel_order' order.order_hash as cancel_order %}
-                        <a class="btn btn-danger btn-block pull-right" href="{{ cancel_order }}">Cancel order</a><br/>
+                        <a class="btn btn-danger btn-block pull-right" href="{{ cancel_order }}">Cancel
+                            order</a><br/>
                     </div>
                 </div>
                 <div class="row">
@@ -131,12 +132,14 @@
         </div>
         <div class="col-md-12">
             <ul class="list-group">
-            {% for history_entry in order.orderhistoryentry_set.all %}
-                <li class="list-group-item">{{ history_entry.create_date }}: <em>{{ history_entry.description }}</em></li>
-            {% empty %}
-                <div class="col-sm-12"><em>{% trans 'No history yet' %}</em></div>
-            {% endfor %}
+                {% for history_entry in order.orderhistoryentry_set.all %}
+                    <li class="list-group-item">{{ history_entry.create_date }}:
+                        <em>{{ history_entry.description }}</em></li>
+                {% empty %}
+                    <div class="col-sm-12"><em>{% trans 'No history yet' %}</em></div>
+                {% endfor %}
             </ul>
         </div>
     </div>
+    <script>$(".slow-images").imageReloader();</script>
 {% endblock %}

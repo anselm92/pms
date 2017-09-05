@@ -18,7 +18,7 @@ from django.views.generic import TemplateView, CreateView, DetailView, FormView,
 from pms import settings
 from printing.filters import OrdersFilter
 from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm, CancelOrderForm
-from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, process_stl
+from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, calculate_stl_size, convert_stl_to_png
 from printing.mixins import PermissionPostGetRequiredMixin
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry, \
     ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED, CustomGroupFilter
@@ -151,15 +151,16 @@ class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, Subs
             order.customer = ExternalCustomer.objects.get(order_token=token)
         order.save()
         if CreateOrderView.has_extension(order.file.path, 'pdf'):
-            convert_pdf_to_png(order.file.path)
+            convert_pdf_to_png.delay(order.file.path)
         if CreateOrderView.has_extension(order.file.path, 'stl'):
-            process_stl(order.file.path, order)
+            calculate_stl_size(order.file.path, order)
+            convert_stl_to_png.delay(order.file.path)
         self.subscribe(order, order.customer)
         return super(CreateOrderView, self).form_valid(form)
 
     @staticmethod
     def has_extension(path, extension):
-        return os.path.splitext(path)[1] == f'.{extension}'
+        return os.path.splitext(path)[1].lower() == f'.{extension}'
 
 
 class CreateExternalCustomerView(FormView):

@@ -13,10 +13,12 @@
 
 {% block content %}
     <div class="row">
-        <div class="col-md-2 hidden-xs"><img
+        <div class="col-md-2 hidden-xs text-center"><img
                 src="/media/{{ order.file_thumbnail_path }}"
-                alt="..."
-                class="img-responsive"/></div>
+                alt=""
+                style="background: url('/static/images/loader.gif') no-repeat; background-position: center; min-height: 100px"
+                class="img-responsive slow-images center-block"/><small id="img-text">Generating preview...</small>
+        </div>
         <div class="col-md-8">
             <table class="table">
                 <tr>
@@ -55,4 +57,6 @@
             </div>
         </div>
     </div>
+    <script>$(".slow-images").imageReloader();</script>
+
 {% endblock %}
