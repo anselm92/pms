@@ -15,7 +15,12 @@ The PMS is a web-based software which provides easy management of both 2d and 3d
 6. Install necessary software dependencies (for PDF previews)
   * ImageMagick: http://www.imagemagick.org/script/download.php (**Note**: Version must be **smaller** than 7.0.0!)
   * Ghostscript: https://www.ghostscript.com/download/gsdnld.html
-7. Run server: `python3 manage.py runserver 8000`
+  * Redis https://redis.io/download
+7. Run redis and worker
+  * $ redis-server
+  * change into the project directory (eg. Repos/pms/pms) the one where managa.py is located
+  * run worker $ celery -A pms.settings.celery worker -l info -c 3
+8. Run server: `python3 manage.py runserver 8000`
 
 ## Development Notes
 * Regenerate translation files: `django-admin makemessages -l de`
