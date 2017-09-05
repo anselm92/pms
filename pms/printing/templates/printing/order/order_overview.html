@@ -70,6 +70,12 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12 form-group">
+                        <a class="btn btn-default btn-block pull-right" href="{{ order.file.url }} ">Download File
+                            </a><br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 form-group">
                         {% if order.scriptorder %}
                             {% url 'printing:printing_2d:script' order.order_hash as copy_url %}
                         {% elif order.customorder2d %}

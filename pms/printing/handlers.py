@@ -77,7 +77,7 @@ def convert_stl_to_png(stl):
         scale = mesh_file.points.flatten(-1)
         axes.auto_scale_xyz(scale, scale, scale)
         # TODO what if .STL
-        pyplot.savefig(stl.replace('.stl', '.png'))
+        pyplot.savefig(stl.replace('.stl', '.png'),dpi=70)
     except Exception as e:
         logging.error(traceback.format_exc())
         logger.error('Could not convert stl to png. Please check your numpy and matplotlib installation')
