@@ -159,6 +159,10 @@ class CustomGroupFilter(models.Model):
         return f'{self.group} -> ({self.key} : {self.value or self.value_boolean})'
 
 
+class Configuration(models.Model):
+    maintenance = models.BooleanField(default=False)
+
+
 # Delete files not only db object
 @receiver(pre_delete, sender=Order)
 def order_delete(sender, instance, **kwargs):

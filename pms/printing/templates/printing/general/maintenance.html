@@ -1,0 +1,16 @@
+{% extends "pms/base_generic.html" %}
+{% load i18n %}
+
+{% block title %}Maintenance{% endblock %}
+
+{% block page_title %}Maintenance{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="alert alert-info alert-dismissable">
+                {% trans "We're sorry, we currently not accepting any new orders" %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

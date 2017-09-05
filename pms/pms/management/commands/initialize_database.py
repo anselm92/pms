@@ -134,3 +134,6 @@ class Command(BaseCommand):
         group_filter2.save()
         group_filter.save()
         django_user_2.groups.add(group)
+
+        config = Configuration(maintenance=False)
+        config.save()

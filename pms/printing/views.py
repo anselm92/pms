@@ -19,7 +19,7 @@ from pms import settings
 from printing.filters import OrdersFilter
 from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm, CancelOrderForm
 from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, calculate_stl_size, convert_stl_to_png
-from printing.mixins import PermissionPostGetRequiredMixin
+from printing.mixins import PermissionPostGetRequiredMixin, MaintenanceMixin
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry, \
     ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED, CustomGroupFilter
 from printing.templatetags.printing_filters import order_status
@@ -121,7 +121,7 @@ class ShowOrderOverviewView(View):
         return view(request, *args, **kwargs)
 
 
-class CreateOrderView(UserPassesTestMixin, SuccessMessageMixin, CreateView, SubscriptionView):
+class CreateOrderView(MaintenanceMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView, SubscriptionView):
     login_url = reverse_lazy('printing:register_customer')
 
     def get_initial(self):
@@ -316,3 +316,6 @@ class ServeOrderFiles(View):
 
 class AboutView(TemplateView):
     template_name = 'printing/general/about.html'
+
+class MaintenanceView(TemplateView):
+    template_name = 'printing/general/maintenance.html'
