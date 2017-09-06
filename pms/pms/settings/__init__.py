@@ -1,5 +1,6 @@
 from pms.settings.celery import app as cel_app
 from pms.settings.local_settings import *
+import os
 
 # Note: do not remove this, it makes sure the import is not deleted and thus celery starts
 cel_app
@@ -120,8 +121,8 @@ LOGIN_REDIRECT_URL = '/'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
-ECAPTCHA_PUBLIC_KEY = '6Ld9Xi4UAAAAAFJrnP9En_5YodT2uIQfH_pY1_eL'
-RECAPTCHA_PRIVATE_KEY = '6Ld9Xi4UAAAAAPFjPuVaCrvde9kR8Zr6ER0pCQCd'
+RECAPTCHA_PUBLIC_KEY = '6Lc_mS8UAAAAAEcdteSObFe2tMDxHI5wWE8kBMJZ'
+RECAPTCHA_PRIVATE_KEY = '6Lc_mS8UAAAAACDQD4g5mtvByRoUHQbXXL-aBiNe'
 NOCAPTCHA = True
 RECAPTCHA_TESTING = True
 

@@ -20,3 +20,4 @@ CELERY_TIMEZONE = 'Europe/Berlin'
 
 MEDIA_ROOT = FILES_ROOT
 MEDIA_URL = '/de/media/'
+STATIC_ROOT = '/var/pms/static/'

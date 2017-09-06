@@ -33,7 +33,7 @@ class StaffCommentBaseForm(CommentBaseForm):
 
 
 class ExternalCustomerForm(ModelForm):
-    #captcha = ReCaptchaField()
+    captcha = ReCaptchaField(attrs={'theme': 'clean'})
 
     class Meta:
         model = ExternalCustomer

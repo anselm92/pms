@@ -7,7 +7,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.contrib.auth.models import User, Group
-from django_model_changes import ChangesMixin
 from model_utils.managers import InheritanceManager
 
 from printing.handlers import order_files_upload_handler, fs, _delete_order
