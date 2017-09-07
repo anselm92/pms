@@ -30,33 +30,41 @@ The PMS is a web-based software which provides easy management of both 2d and 3d
 Note this manual is for CentOS, please use appropriate commands for other operating systems
 ###### Software requirements:
 
-> sudo yum install https://centos7.iuscommunity.org/ius-release.rpm
-sudo yum install python36u
-sudo yum install python36u-pip
-sudo yum install python36u-devel
-sudo yum install gcc
-sudo yum install openldap-devel
-sudo yum install ghostscript
-sudo yum install ImageMagick ImageMagick-devel
-sudo yum install redis
+    sudo yum install https://centos7.iuscommunity.org/ius-release.rpm
+    sudo yum install python36u
+    sudo yum install python36u-pip
+    sudo yum install python36u-devel
+    sudo yum install gcc
+    sudo yum install openldap-devel
+    sudo yum install ghostscript
+    sudo yum install ImageMagick ImageMagick-devel
+    sudo yum install redis
 
 ###### Project setup
 
-> pip3.6 install virtualenv
-cd /opt
-virtualenv -p python3.6 pmsenv
-cd pmsenv && source bin/activate
-git clone https://git.fs.tum.de/printing/pms.git
+    pip3.6 install virtualenv
+    cd /opt
+    virtualenv -p python3.6 pmsenv
+    cd pmsenv && source bin/activate
+    git clone https://git.fs.tum.de/printing/pms.git
 
 your folder structure should now look like this /opt/pmsenv/pms/pms/ (manage.py)
->cd /opt/pmsenv/pms
-pip3.6 install -r requirements.txt
-python manage.py migrate
+
+    cd /opt/pmsenv/pms
+    pip3.6 install -r requirements.txt
+    python manage.py migrate
 
 ###### Setup apache
 
-> mkdir /var/log/pms
-chown apache:apache /var/log/pms/
+    mkdir /var/log/pms
+    chown apache:apache /var/log/pms/
+    yum install httpd-devel
+    pip3.6 install mod_wsgi
+    mod_wsgi-express module-config
+    
+	# put the output of this command before your virtual host definition!
+	# except WSGI Python home, this has to point to your virtualenv!!!
+	# > LoadModule wsgi_module "/usr/lib64/python3.6/site-packages/mod_wsgi/server/mod_wsgi-py36.cpython-36m-x86_64-linux-gnu.so"
 
 create a config file for django:
 
@@ -99,67 +107,99 @@ create a config file for django:
 	</VirtualHost>
 
 
+Prepare variable folders for media
+   
 
->yum install httpd-devel
-pip3.6 install mod_wsgi
-mod_wsgi-express module-config
-	# put the output of this command before your virtual host definition!
-	# except WSGI Python home, this has to point to your virtualenv!!!
-	# > LoadModule wsgi_module "/usr/lib64/python3.6/site-packages/mod_wsgi/server/mod_wsgi-py36.cpython-36m-x86_64-linux-gnu.so"
-	# > WSGIPythonHome "/usr"
-
-> mkdir /var/pms
-mkdir /var/pms/static
-mkdir /var/pms/orders
+    mkdir /var/pms
+    mkdir /var/pms/static
+    mkdir /var/pms/orders
 
 Change permissions on /var/pms ! So apache cann access it
 
-> chown -R apache:apache /var/pms
-python manage.py collectstatic
-service httpd restart
+    chown -R apache:apache /var/pms
+    python manage.py collectstatic
+    service httpd restart
 
 Test your installation, by now everything except order preview generation and emails should work
 
 ###### Configure services
 
->yum install supvisord
-systemctl enable supervisord
-systemctl start supervisord
-systemctl enable redis
-systemctl start redis
-nano /etc/supervisord.d/pms.ini
+    systemctl enable redis
+    systemctl start redis
 
-	[program:pms-celery]
-	command=/opt/pmsenv/bin/celery -A pms.settings.celery worker --loglevel=INFO -c 4
-	directory=/opt/pmsenv/pms/pms
-	environment=PATH="/opt/pmsenv/bin"
-	user=apache
-	numprocs=2
-	stdout_logfile=/var/log/pms/celery-worker.log
-	stderr_logfile=/var/log/pms/celery-worker.log
-	autostart=true
-	autorestart=true
-	startsecs=10
-	process_name = %(program_name)s_%(process_num)o2d
+    mkdir /var/run/celery
+    chown apache:apache /var/run/celery
+    nano /etc/systemd/system/celery.service
+    
+Your service file should look like this
 
-	; Need to wait for currently executing tasks to finish at shutdown.
-	; Increase this if you have very long running tasks.
-	stopwaitsecs = 600
+	[Unit]
+    Description=Celery Service
+    After=network.target
 
-	; When resorting to send SIGKILL to the program to terminate it
-	; send SIGKILL to its whole process group instead,
-	; taking care of its children as well.
-	killasgroup=true
+    [Service]
+    Type=forking
+    User=apache
+    Group=apache
+    EnvironmentFile=-/etc/celery/celery.conf
+    WorkingDirectory=/opt/pmsenv/pms/pms
+    ExecStart=/bin/sh -c '${CELERY_BIN} multi start ${CELERYD_NODES} \
+      -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
+      --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} ${CELERYD_OPTS}'
+    ExecStop=/bin/sh -c '${CELERY_BIN} multi stopwait ${CELERYD_NODES} \
+      --pidfile=${CELERYD_PID_FILE}'
+    ExecReload=/bin/sh -c '${CELERY_BIN} multi restart ${CELERYD_NODES} \
+      -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
+      --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} ${CELERYD_OPTS}'
+    
+    [Install]
+    WantedBy=multi-user.target
 
-	; if rabbitmq is supervised, set its priority higher
-	; so it starts first
-	priority=998
+Next create a config file for the service 
+    
+    mkdir /etc/celery
+    nano /etc/celery/celery.conf
+    
+Put this into the configuration file (adapt if necessary)
+
+    # Name of nodes to start
+    # here we have a single node
+    CELERYD_NODES="w1"
+    # or we could have three nodes:
+    #CELERYD_NODES="w1 w2 w3"
+    
+    # Absolute or relative path to the 'celery' command:
+    CELERY_BIN="/opt/pmsenv/bin/celery"
+    #CELERY_BIN="/virtualenvs/def/bin/celery"
+    
+    # App instance to use
+    # comment out this line if you don't use an app
+    CELERY_APP="pms.settings.celery"
+    # or fully qualified:
+    #CELERY_APP="proj.tasks:app"
+    
+    # How to call manage.py
+    CELERYD_MULTI="multi"
+    
+    # Extra command-line arguments to the worker
+    CELERYD_OPTS="--time-limit=300 --concurrency=2"
+    
+    # - %n will be replaced with the first part of the nodename.
+    # - %I will be replaced with the current child process index
+    #   and is important when using the prefork pool to avoid race conditions.
+    CELERYD_PID_FILE="/var/run/celery/%n.pid"
+    CELERYD_LOG_FILE="/var/log/pms/%n%I.log"
+    CELERYD_LOG_LEVEL="INFO"
 
 
-> sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl status (should give running)
 
+Next enable and start celery
+
+    systemctl daemon-reload
+    systemctl start celery
+    systemctl status celery
+    
+    
 
 ##### Lastly configure clean_orders to run periodically
 TBD
