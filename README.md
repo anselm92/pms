@@ -26,6 +26,41 @@ The PMS is a web-based software which provides easy management of both 2d and 3d
 * Regenerate translation files: `django-admin makemessages -l de`
 * Recompile translation files: `django-admin.py compilemessages`
 
+## Rest
+PMS supports rest to create, show and update orders.
+However you have to authenticate first. Authentication is done by 
+sending a http request, which has to look as follows 
+
+    POST /api-token-auth/ HTTP/1.1
+    HOST: 127.0.0.1:8000
+    content-length: 47
+    content-type: application/json
+    
+    {
+      "username":"test",
+      "password":"test"
+    }
+ 
+The server will reply with an authentication token: 
+
+    {
+        "token": "15d0e38de7d69ad9c488a61c29da84a8a602c69a"
+    }
+
+Further requests need to have the authorization field in the header set.
+See the following example for how a http request to retrieve all orders should look like
+
+    GET /rest/orders/ HTTP/1.1
+    HOST: 127.0.0.1:8000
+    authorization: Token 15d0e38de7d69ad9c488a61c29da84a8a602c69a
+    content-type: application/json
+
+Urls available are:
+
+    /orders
+    /customers
+    /users
+
 ## Deployment
 Note this manual is for CentOS, please use appropriate commands for other operating systems
 ###### Software requirements:
