@@ -20,3 +20,4 @@ sqlparse==0.2.3
 Wand==0.4.4
 redis==2.10.6
 celery==4.1.0
+djangorestframework==3.6.4

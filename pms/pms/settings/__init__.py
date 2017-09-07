@@ -26,7 +26,9 @@ INSTALLED_APPS = [
     'printing_2d',
     'printing_3d',
     'bootstrap3',
-    'captcha'
+    'captcha',
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -140,3 +142,12 @@ EMAIL_HOST_PASSWORD = '3jfk6dCCGT75fHVFdd9987'  # remove last letter
 EMAIL_USE_TLS = True
 
 SITE = "localhost:8000"
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
