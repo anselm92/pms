@@ -1,21 +1,17 @@
 {% load i18n %}
 
 <ul class="nav navbar-nav side-nav">
-    {% url "printing:home" as url %}
-    <li {% if request.path == url %} class="active"{% endif %}>
-        <a href="{{ url }}"><i class="fa fa-fw fa-home"></i> {% trans "Home" %}</a>
-    </li>
-    {% url "printing:all_orders" as url %}
-    <li {% if request.path == url %} class="active"{% endif %}>
-        <a href="{{ url }}"><i class="fa fa-fw fa-list"></i> {% trans "Dashboard" %}</a>
+    {% url "printing:printing_3d:order_3d" "" as index_3d %}
+    <li {% if request.path == index_3d %} class="active"{% endif %}>
+        <a href="{{ index_3d }}"><i class="fa fa-fw fa-cubes"></i> 3D Printing</a>
     </li>
     {% url "printing:printing_2d:home" as index_2d %}
     <li {% if request.path == index_2d %} class="active"{% endif %}>
         <a href="{{ index_2d }}"><i class="fa fa-fw fa-print"></i> 2D Printing</a>
     </li>
-    {% url "printing:printing_3d:order_3d" "" as index_3d %}
-    <li {% if request.path == index_3d %} class="active"{% endif %}>
-        <a href="{{ index_3d }}"><i class="fa fa-fw fa-cubes"></i> 3D Printing</a>
+    {% url "printing:all_orders" as url %}
+    <li {% if request.path == url %} class="active"{% endif %}>
+        <a href="{{ url }}"><i class="fa fa-fw fa-list"></i> {% trans "Dashboard" %}</a>
     </li>
     {% url "printing:about" as about %}
     <li {% if request.path == about %} class="active"{% endif %}>

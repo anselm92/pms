@@ -13,7 +13,8 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllow
 from django.template import loader
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, CreateView, DetailView, FormView, UpdateView, DeleteView, ListView
+from django.views.generic import TemplateView, CreateView, DetailView, FormView, UpdateView, DeleteView, ListView, \
+    RedirectView
 
 from pms import settings
 from printing.filters import OrdersFilter
@@ -26,8 +27,9 @@ from printing.templatetags.printing_filters import order_status
 from printing.utils import CommentEmail, OrderReceivedEmail
 
 
-class HomeView(TemplateView):
-    template_name = "printing/general/home.html"
+class HomeView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse('printing:printing_3d:order_3d', kwargs={'order_token': ''})
 
 
 class HistoryUpdateView(UpdateView):
