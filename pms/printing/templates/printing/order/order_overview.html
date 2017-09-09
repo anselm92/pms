@@ -41,6 +41,14 @@
                         <td>{% trans 'State' %}:</td>
                         <td>{{ order.status|order_status }}</td>
                     </tr>
+                    <tr>
+                        <td>{% trans 'Amount' %}:</td>
+                        <td>{{ order.amount }}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans 'Customer' %}:</td>
+                        <td>{{ order.customer }}</td>
+                    </tr>
                     {% if order.scriptorder %}
                         {% include 'order/order_overview_script.html' %}
                     {% elif order.customorder2d %}
@@ -71,7 +79,7 @@
                 <div class="row">
                     <div class="col-md-12 form-group">
                         <a class="btn btn-default btn-block pull-right" href="{{ order.file.url }} ">Download File
-                            </a><br/>
+                        </a><br/>
                     </div>
                 </div>
                 <div class="row">

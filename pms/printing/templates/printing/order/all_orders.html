@@ -57,7 +57,7 @@
                         </td>
                         <td style="max-width:130px" scope="row"><a href="{{ link }}">{{ order.title }}</a>
                             <br>
-                            <small class="hidden-xs">{{ order.order_hash }}{{ order.customorder2d.cost_center }} </small>
+                            <small class="hidden-xs">{{ order.order_hash }} </small>
                         </td>
                         {% with order.comment_set.all.last as last_comment %}
                             <td class="hidden-xs" style="max-width:200px">{{ order.comment_set.all|length }} comments
@@ -72,7 +72,7 @@
                                 <i>"{{ last_comment.text|truncatechars:30 }}"</i>{% endif %}
                             </small>{% endwith %}
                     </td>
-                        <td>{% if order.customorder2d %}Custom order{% elif order.scriptorder %}Script{% endif %}</td>
+                        <td>{% if order.customorder2d %}Custom order<br>{{ order.customorder2d.cost_center }}{% elif order.scriptorder %}Script{% elif order.order3d %}3D Order{% endif %}</td>
                         <td style="max-width:100px"> {{ order.create_date }}</td>
                         <td class="hidden-xs">{{ order.customer }}</td>
                         <td style="min-width:150px">
