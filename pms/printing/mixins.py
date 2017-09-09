@@ -11,14 +11,15 @@ class PermissionPostGetRequiredMixin(AccessMixin):
     CBV mixin which verifies that the current user has all specified
     permissions.
     """
-    permission_post_required = ''
-    permission_get_required = ''
+    permission_post_required =[]
+    permission_get_required = []
 
     def get_permission_required(self, method):
+        perms=[]
         if method == 'POST':
-            perms = self.permission_post_required
+            perms+=self.permission_post_required
         else:
-            perms = self.permission_get_required
+            perms+= self.permission_get_required
         return perms
 
     def has_permission(self, method):

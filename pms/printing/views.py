@@ -62,11 +62,11 @@ class ShowOrderDetailView(PermissionPostGetRequiredMixin, DetailView, HistoryUpd
     slug_url_kwarg = "order_hash"
     slug_field = "order_hash"
     fields = ['status', 'assignee']
-    permission_post_required = 'printing.order_change'
+    permission_post_required = ['printing.change_order']
 
     def get_queryset(self):
         qs = super(ShowOrderDetailView, self).get_queryset()
-        return qs.filter(status__gt=0)
+        return qs.filter(status__gt=ORDER_STATUS_PENDING)
 
     def get_success_url(self):
         return reverse('printing:overview', kwargs={'order_hash': self.kwargs['order_hash']})
@@ -260,7 +260,8 @@ class ShowAllOrdersView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
         context['order_filter'] = order_filter
         return context
 
-    def build_filter_from_permissions(self, query_filter={}):
+    def build_filter_from_permissions(self):
+        query_filter = {}
         group_filters = CustomGroupFilter.objects.filter(group__in=self.request.user.groups.all())
         for group_filter in group_filters:
             query_filter.update({group_filter.key: group_filter.value or group_filter.value_boolean})
