@@ -1,6 +1,14 @@
 {% load i18n %}
+{% load permissions %}
 
 <ul class="nav navbar-nav side-nav">
+    {% url 'printing:printing_2d:script' "" as scripturl %}
+    {% user_can_see_view scripturl request.user as see_scripts %}
+    {% url 'printing:printing_2d:custom' "" as customurl %}
+    {% user_can_see_view customurl request.user as see_customs %}
+    {% url 'printing:printing_3d:order_3d' "" as 3durl %}
+    {% user_can_see_view 3durl request.user as see_3d %}
+
     {% url "printing:home" as url %}
     <li {% if request.path == url %} class="active"{% endif %}>
         <a href="{{ url }}"><i class="fa fa-fw fa-home"></i> {% trans "Home" %}</a>
@@ -9,14 +17,19 @@
     <li {% if request.path == url %} class="active"{% endif %}>
         <a href="{{ url }}"><i class="fa fa-fw fa-list"></i> {% trans "Dashboard" %}</a>
     </li>
-    {% url "printing:printing_2d:home" as index_2d %}
-    <li {% if request.path == index_2d %} class="active"{% endif %}>
-        <a href="{{ index_2d }}"><i class="fa fa-fw fa-print"></i> 2D Printing</a>
-    </li>
-    {% url "printing:printing_3d:order_3d" "" as index_3d %}
-    <li {% if request.path == index_3d %} class="active"{% endif %}>
-        <a href="{{ index_3d }}"><i class="fa fa-fw fa-cubes"></i> 3D Printing</a>
-    </li>
+    {% if see_customs or see_scripts %}
+        {% url "printing:printing_2d:home" as index_2d %}
+        <li {% if request.path == index_2d %} class="active"{% endif %}>
+            <a href="{{ index_2d }}"><i class="fa fa-fw fa-print"></i> 2D Printing</a>
+        </li>
+    {% endif %}
+    {% if see_3d %}
+        {% url "printing:printing_3d:order_3d" "" as index_3d %}
+        <li {% if request.path == index_3d %} class="active"{% endif %}>
+            <a href="{{ index_3d }}"><i class="fa fa-fw fa-cubes"></i> 3D Printing</a>
+        </li>
+    {% endif %}
+
     {% url "printing:about" as about %}
     <li {% if request.path == about %} class="active"{% endif %}>
         <a href="{{ about }}"><i class="fa fa-fw fa-info-circle"></i> About</a>

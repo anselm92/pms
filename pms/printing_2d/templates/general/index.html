@@ -1,5 +1,6 @@
 {% extends "pms/base_generic.html" %}
 {% load i18n %}
+{% load permissions %}
 
 {% block title %}Printing 2D Services{% endblock %}
 
@@ -12,11 +13,19 @@
 
     <div class="row">
         <div class="col-lg-12">
-
             {% url 'printing:printing_2d:script' "" as scripturl %}
-            <p>{% bootstrap_button "New script order" button_type="link" button_class="btn-primary" href=scripturl %}</p>
-            {% url "printing:printing_2d:custom" "" as customurl %}
-            <p>{% bootstrap_button "New custom order" button_type="link" button_class="btn-primary" href=customurl %}</p>
+            {% user_can_see_view scripturl request.user as see_scripts %}
+            {% url 'printing:printing_2d:custom' "" as customurl %}
+            {% user_can_see_view customurl request.user as see_customs %}
+            {% if  see_scripts %}
+                {% url 'printing:printing_2d:script' "" as scripturl %}
+                <p>{% bootstrap_button "New script order" button_type="link" button_class="btn-primary" href=scripturl %}</p>
+            {% endif %}
+            {% if  see_customs %}
+                {% url "printing:printing_2d:custom" "" as customurl %}
+                <p>{% bootstrap_button "New custom order" button_type="link" button_class="btn-primary" href=customurl %}</p>
+            {% endif %}
+
         </div>
     </div>
 {% endblock %}

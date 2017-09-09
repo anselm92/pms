@@ -1,7 +1,8 @@
+from django.conf import settings
 from django.contrib.auth.mixins import AccessMixin
-from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils.encoding import force_text
 
 from printing.models import Configuration
 
@@ -11,15 +12,19 @@ class PermissionPostGetRequiredMixin(AccessMixin):
     CBV mixin which verifies that the current user has all specified
     permissions.
     """
-    permission_post_required =[]
+    permission_post_required = []
     permission_get_required = []
+    permission_denied_url = None
+
+    def get_login_url(self):
+        force_text(self.permission_denied_url or settings.LOGIN_URL)
 
     def get_permission_required(self, method):
-        perms=[]
+        perms = []
         if method == 'POST':
-            perms+=self.permission_post_required
+            perms += self.permission_post_required
         else:
-            perms+= self.permission_get_required
+            perms += self.permission_get_required
         return perms
 
     def has_permission(self, method):
