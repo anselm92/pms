@@ -146,7 +146,7 @@
         </div>
         <div class="col-md-12">
             <ul class="list-group">
-                {% for history_entry in order.orderhistoryentry_set.all %}
+                {% for history_entry in order.orderhistoryentry_set.all|slice:"15" %}
                     <li class="list-group-item">{{ history_entry.create_date }}:
                         <em>{{ history_entry.description }}</em></li>
                 {% empty %}
