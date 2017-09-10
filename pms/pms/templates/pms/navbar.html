@@ -6,12 +6,14 @@
             <i class="fa fa-language"></i> {{ LANGUAGE_CODE|language_name_translated }} <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
+            {% with "/"|add:LANGUAGE_CODE|add:"/" as language_url %}
             {% for language in LANGUAGES %}
                 <li>
-                    <a href="/{{ language.0 }}"><i
+                    <a href="/{{ language.0 }}/{{ request.path|cut:language_url }}"><i
                             class="fa fa-fw fa-language"></i> {{ language.0|language_name_translated }}</a>
                 </li>
             {% endfor %}
+        {% endwith %}
         </ul>
     </li>
     {% if user.is_authenticated %}
@@ -20,10 +22,6 @@
                 <i class="fa fa-user"></i> {{ request.user.username }} <b class="caret"></b>
             </a>
             <ul class="dropdown-menu">
-                <li>
-                    <a href="#"><i class="fa fa-fw fa-user"></i> {% trans "My Account" %}</a>
-                </li>
-                <li class="divider"></li>
                 <li>
                     <a href="{% url "printing:logout" %}"><i class="fa fa-fw fa-power-off"></i> {% trans "Log Out" %}
                     </a>

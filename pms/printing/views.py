@@ -289,7 +289,7 @@ class PreviewOrderView(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     model = Order
     slug_url_kwarg = "order_hash"
     slug_field = "order_hash"
-    success_message = "Order was sent successful"
+    success_message = "Order has been successfully sent"
     fields = []
 
     def test_func(self):
