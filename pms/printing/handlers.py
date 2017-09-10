@@ -39,6 +39,16 @@ def convert_pdf_to_png(pdf):
         logger.error('Could not convert pdf to png. Please check your imagemagick and wand installation')
 
 
+def get_number_of_pages(pdf, order):
+    try:
+        from wand.image import Image
+        with Image(filename=pdf, resolution=70) as i:
+            order.number_of_pages = len(i.sequence)
+            order.save()
+    except:
+        logger.error('Could not count number of pages. Please check your imagemagick and wand installation')
+
+
 def create_mesh(stl):
     from stl import mesh
     mesh_file = mesh.Mesh.from_file(stl)

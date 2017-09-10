@@ -12,6 +12,7 @@ class CoverSheetColor(models.Model):
 
 class ScriptOrder(Order):
     cover_sheet_color = models.ForeignKey(CoverSheetColor)
+    number_of_pages = models.IntegerField(blank=True, default=0)
 
     class Meta:
         permissions = (
@@ -46,6 +47,7 @@ class CustomOrder2d(Order):
     cost_center = models.ForeignKey(CostCenter)
     post_processing = models.ManyToManyField(PostProcessing2d)
     material = models.ForeignKey(Material2d)
+    number_of_pages = models.IntegerField(blank=True, default=0)
 
     class Meta:
         permissions = (

@@ -20,7 +20,8 @@ from django.views.generic import TemplateView, CreateView, DetailView, FormView,
 from pms import settings
 from printing.filters import OrdersFilter
 from printing.forms import ExternalCommentForm, ExternalCustomerForm, StaffCommentBaseForm, CancelOrderForm
-from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, calculate_stl_size, convert_stl_to_png
+from printing.handlers import CONTENT_TYPES, convert_pdf_to_png, calculate_stl_size, convert_stl_to_png, \
+    get_number_of_pages
 from printing.mixins import PermissionPostGetRequiredMixin, MaintenanceMixin
 from printing.models import Order, StaffCustomer, Comment, ExternalCustomer, Subscription, OrderHistoryEntry, \
     ORDER_STATUS_OPEN, ORDER_STATUS_PENDING, ORDER_STATUS_DENIED, CustomGroupFilter
@@ -155,6 +156,7 @@ class CreateOrderView(MaintenanceMixin, UserPassesTestMixin, SuccessMessageMixin
         order.save()
         if CreateOrderView.has_extension(order.file.path, 'pdf'):
             convert_pdf_to_png.delay(order.file.path)
+            get_number_of_pages(order.file.path, order)
         if CreateOrderView.has_extension(order.file.path, 'stl'):
             calculate_stl_size(order.file.path, order)
             convert_stl_to_png.delay(order.file.path)
