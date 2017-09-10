@@ -112,14 +112,25 @@ class CancelOrderView(HistoryUpdateView):
         return super(CancelOrderView, self).form_valid(form)
 
 
+class RedirectOverviewView(RedirectView, DetailView):
+    model = Order
+    slug_url_kwarg = "order_hash"
+    slug_field = "order_hash"
+
+    def get_redirect_url(self, *args, **kwargs):
+        order = type(Order.objects.filter(order_hash=kwargs.get('order_hash')).select_subclasses().first())
+        app, cls = str(order._meta).split('.')
+        return reverse_lazy(f'printing:{app}:{cls}_overview',kwargs=kwargs)
+
+
 class ShowOrderOverviewView(View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        view = ShowOrderDetailView.as_view()
+    get_view = ShowOrderDetailView
+
+    def get(self, request, *args, **kwargs):
+        view = self.get_view.as_view()
         return view(request, *args, **kwargs)
 
-    @staticmethod
-    def post(request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         staff = request.user.has_perm('printing.add_staffcomment')
         view = CreateStaffCommentView.as_view() if staff else CreateExternalCommentView.as_view()
         return view(request, *args, **kwargs)

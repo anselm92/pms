@@ -18,7 +18,7 @@
     </div>
     <div class="row">
         {% url 'printing:update_order' order.order_hash as update_url %}
-        <form action="{{ update_url }}" method="post">
+        <form action="update/" method="post">
             <div class="col-md-3 hidden-xs text-center"><img
                     src="/media/{{ order.file_thumbnail_path }}"
                     alt=""
