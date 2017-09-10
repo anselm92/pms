@@ -8,11 +8,11 @@ class Material3d(Material):
 
 class Order3d(Order):
     material = models.ForeignKey(Material3d)
-    width = models.FloatField(default=0, blank=True, null=True)
-    height = models.FloatField(default=0, blank=True, null=True)
-    depth = models.FloatField(default=0, blank=True, null=True)
-    chargeable_weight = models.FloatField(default=0, blank=True, null=True)
-    junk_weight = models.FloatField(default=0, blank=True, null=True)
+    width = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    height = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    depth = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    chargeable_weight = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    junk_weight = models.DecimalField(max_digits=10, decimal_places=2,blank=True, null=True)
 
     class Meta:
         permissions = (

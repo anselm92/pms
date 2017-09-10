@@ -61,9 +61,9 @@ def calculate_stl_size(stl, order):
         mesh_file = create_mesh(stl)
 
         size = subtract(mesh_file.max_, mesh_file.min_)
-        order.width = size[0]
-        order.depth = size[1]
-        order.height = size[2]
+        order.width = size[0].item()
+        order.depth = size[1].item()
+        order.height = size[2].item()
         order.save()
 
     except:
