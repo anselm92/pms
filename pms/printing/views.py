@@ -12,6 +12,7 @@ from django.forms import model_to_dict
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound
 from django.template import loader
 from django.urls import reverse, reverse_lazy
+from django.utils import formats
 from django.views import View
 from django.views.generic import TemplateView, CreateView, DetailView, FormView, UpdateView, DeleteView, ListView, \
     RedirectView
@@ -300,14 +301,21 @@ class PreviewOrderView(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
 class ServeOrderFiles(View):
     def get(self, request, order_hash, file):
         path = os.path.join(settings.FILES_ROOT, order_hash, file)
-        if os.path.isfile(path):
+        if os.path.isfile(path) and Order.objects.filter(order_hash=order_hash):
             file_extension = os.path.splitext(path)[1].lower()
             image_data = open(path, "rb").read()
             content_type = CONTENT_TYPES.get(file_extension)
             if not content_type:
                 content_type = 'application/' + file_extension[1:]
-            return HttpResponse(image_data, content_type=content_type)
+            response = HttpResponse(image_data, content_type=content_type)
+            response['Content-Disposition'] = f'attachment; filename="{self.convert_name(order_hash,file_extension)}"'
+            return response
         return self.raise_404(request)
+
+    def convert_name(self, order_hash, file_extension):
+        order = Order.objects.get(order_hash=order_hash)
+        date = formats.date_format(order.create_date, "SHORT_DATETIME_FORMAT")
+        return f"{order.title}_{date}{file_extension}"
 
     def post(self, request):
         return HttpResponseNotAllowed('GET')
@@ -319,6 +327,7 @@ class ServeOrderFiles(View):
 
 class AboutView(TemplateView):
     template_name = 'printing/general/about.html'
+
 
 class MaintenanceView(TemplateView):
     template_name = 'printing/general/maintenance.html'
